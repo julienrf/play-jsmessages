@@ -11,6 +11,8 @@ object ApplicationBuild extends Build {
       "com.github.julienrf" %% "play-jsmessages" % "1.0"
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA)
+    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
+        resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
+    )
 
 }

@@ -10,6 +10,9 @@ Add the following dependency to your Play project:
   val appDependenies = Seq(
     "com.github.julienrf" %% "play-jsmessages" % "1.0"
   )
+  val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
+    resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
+  )
 ```
 
 Use the `JsMessages` object to export your application localized messages on client side:
