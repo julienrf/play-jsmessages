@@ -7,8 +7,12 @@ import jsmessages.JsMessages
 
 object Application extends Controller {
 
-  def index = Action {
-    Ok(views.html.index())
+  def index1 = Action {
+    Ok(views.html.index1())
+  }
+
+  def index2 = Action { implicit request =>
+    Ok(views.html.index2())
   }
 
   def jsMessages = Action { implicit request =>

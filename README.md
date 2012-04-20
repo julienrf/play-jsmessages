@@ -7,7 +7,7 @@ This library allows to compute localized messages on client side, in Play 2.0 pr
 Add the following dependency to your Play project:
 
 ```scala
-  val appDependenies = Seq(
+  val appDependencies = Seq(
     "com.github.julienrf" %% "play-jsmessages" % "1.0"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(

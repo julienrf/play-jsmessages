@@ -1,12 +1,11 @@
-@(title: String)(content: Html)
+@(content: Html)
 
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>@title</title>
+        <title>JsMessages Sample</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script type="text/javascript" src="@routes.Application.jsMessages()"></script>
     </head>
     <body>
         @content
