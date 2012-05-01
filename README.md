@@ -8,7 +8,7 @@ Add the following dependency to your Play project:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.julienrf" %% "play-jsmessages" % "1.0"
+    "com.github.julienrf" %% "play-jsmessages" % "1.2"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
@@ -50,7 +50,7 @@ Add the following dependency to your Play project:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.julienrf" %% "play-jsmessages" % "1.1"
+    "com.github.julienrf" %% "play-jsmessages" % "1.2"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
     resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
@@ -60,9 +60,9 @@ Add the following dependency to your Play project:
 Use the `JsMessages` object to export your application localized messages on client side:
 
 ```java
-  public static Result jsMessages() {
-		return ok(jsmessages.JsMessages.apply("Messages", play.api.Play.current() , lang())).as("application/javascript");
-	}
+    public static Result jsMessages() {
+        return ok(jsmessages.JsMessages.generate("Messages")).as("application/javascript");
+    }
 ```
 
 Then you can compute messages on client side:
@@ -74,7 +74,16 @@ Then you can compute messages on client side:
 A template tag is also defined:
 
 ```html
-  @import play.api.Play.current
-  ...
-  @jsmessages.JsMessages("Messages")
+  @jsmessages.JsMessages("Messages")(play.api.Play.current, lang)
+```
+
+Finally, you can only export a subset of your i18n keys:
+
+```java
+    public static Result jsMessages() {
+        return ok(jsmessages.JsMessages.subset("Messages",
+            "error.required",
+            "error.number"
+        )).as("application/javascript");
+    }
 ```
