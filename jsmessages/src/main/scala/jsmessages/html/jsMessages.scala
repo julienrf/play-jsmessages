@@ -1,6 +1,7 @@
 package jsmessages.html
 
 import play.api.templates.Html
+import jsmessages.api.JsMessages
 
 object jsMessages {
 
@@ -24,7 +25,7 @@ object jsMessages {
    * }}}
    */
   def apply(name: String = "Messages")(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
-    script(jsmessages.JsMessages(name))
+    script(JsMessages(name))
 
   /**
    * Generates a JavaScript function able to compute localized messages for a given keys subset.
@@ -39,7 +40,7 @@ object jsMessages {
    * }}}
    */
   def subset(name: String = "Messages")(keys: String*)(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
-    script(jsmessages.JsMessages.subset(name)(keys: _*))
+    script(JsMessages.subset(name)(keys: _*))
 
   private def script(js: String) = Html("""<script type="text/javascript">%s</script>""".format(js))
 

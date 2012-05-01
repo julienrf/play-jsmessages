@@ -1,4 +1,4 @@
-package jsmessages
+package jsmessages.api
 
 import play.api.i18n._
 import play.api.Application
@@ -49,7 +49,7 @@ object JsMessages {
     apply(name, messages)
   }
 
-  def apply(name: String, messages: Map[String, String])(implicit app: Application, lang: Lang): String = {
+  def apply(name: String, messages: Map[String, String]): String = {
     import org.apache.commons.lang.StringEscapeUtils.escapeJavaScript
     """var %s=(function(){var ms={%s}; return function(k){var m=ms[k]||k;for(var i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])} return m}})();""".format(
            name,
