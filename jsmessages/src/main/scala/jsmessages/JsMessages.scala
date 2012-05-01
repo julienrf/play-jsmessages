@@ -51,7 +51,7 @@ object JsMessages {
 
   def apply(name: String, messages: Map[String, String])(implicit app: Application, lang: Lang): String = {
     import org.apache.commons.lang.StringEscapeUtils.escapeJavaScript
-    """var %s=(function(){var ms={%s}; return function(k){var m=ms[k]||k;for(var i=1,l=arguments.length;i<l;i++){m=m.replace('{'+(i-1)+'}',arguments[i])} return m}})();""".format(
+    """var %s=(function(){var ms={%s}; return function(k){var m=ms[k]||k;for(var i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])} return m}})();""".format(
            name,
            (for ((key, msg) <- messages) yield {
              "'%s':'%s'".format(escapeJavaScript(key), escapeJavaScript(msg.replace("''", "'")))
