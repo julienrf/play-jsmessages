@@ -18,4 +18,5 @@ object Application extends Controller {
   def jsMessages = Action { implicit request =>
     Ok(JsMessages("Messages")).as(JAVASCRIPT)
   }
+
 }

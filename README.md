@@ -28,3 +28,18 @@ Then you can compute messages on client side:
 ```javascript
   alert(Messages('greeting', 'World'));
 ```
+
+A template tag is also defined:
+
+```html
+  @jsMessages("Messages")
+```
+
+Last but not least, you can export only a subset of your i18n keys:
+
+```scala
+  JsMessages.subset("Messages")(
+    "error.required",
+    "error.number"
+  )
+```

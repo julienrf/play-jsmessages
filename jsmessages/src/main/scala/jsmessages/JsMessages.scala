@@ -27,19 +27,38 @@ object JsMessages {
    * 
    * Note: This implementation does not handle quotes escaping in patterns (see http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
    */
-  def apply(name: String = "Messages")(implicit app: Application, lang: Lang): String = {
+  def apply(name: String = "Messages")(implicit app: Application, lang: Lang): String = apply(name, allMessages)
+
+  /**
+   * Generates a JavaScript function able to compute localized messages for a given keys subset.
+   * 
+   * Example:
+   * 
+   * {{{
+   *   JsMessages.subset("MyMessages")(
+   *     "error.required",
+   *     "error.number"
+   *   )
+   * }}}
+   */
+  def subset(name: String = "Messages")(keys: String*)(implicit app: Application, lang: Lang): String = {
+    val messages = (for {
+      key <- keys
+      message <- allMessages.get(key)
+    } yield (key, message)).toMap
+    apply(name, messages)
+  }
+
+  def apply(name: String, messages: Map[String, String])(implicit app: Application, lang: Lang): String = {
     import org.apache.commons.lang.StringEscapeUtils.escapeJavaScript
     """var %s=(function(){var ms={%s}; return function(k){var m=ms[k]||k;for(var i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])} return m}})();""".format(
            name,
-           {
-             val localizedMessages = Messages.messages.get(lang.code).getOrElse(Map.empty)
-             val defaultMessages = Messages.messages.get("default").getOrElse(Map.empty)
-             // The ++ operator is not commutative, beware!
-             (for ((key, msg) <- defaultMessages ++ localizedMessages) yield {
-               "'%s':'%s'".format(escapeJavaScript(key), escapeJavaScript(msg.replace("''", "'")))
-             }).mkString(",")
-           }
-           )
+           (for ((key, msg) <- messages) yield {
+             "'%s':'%s'".format(escapeJavaScript(key), escapeJavaScript(msg.replace("''", "'")))
+           }).mkString(",")
+    )
   }
 
+  private def allMessages(implicit app: Application, lang: Lang) =
+    Messages.messages.get("default").getOrElse(Map.empty) ++ Messages.messages.get(lang.code).getOrElse(Map.empty)
 }

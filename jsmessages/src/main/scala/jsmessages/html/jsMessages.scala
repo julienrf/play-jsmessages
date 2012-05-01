@@ -23,10 +23,24 @@ object jsMessages {
    * greeting=Hello {0}!
    * }}}
    */
-  def apply(name: String = "Messages")(implicit app: play.api.Application, lang: play.api.i18n.Lang) = {
-    Html(("""|<script type="text/javascript">
-             |%s
-             |</script>""").stripMargin.format(jsmessages.JsMessages(name)))
-  }
+  def apply(name: String = "Messages")(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
+    script(jsmessages.JsMessages(name))
+
+  /**
+   * Generates a JavaScript function able to compute localized messages for a given keys subset.
+   * 
+   * Example:
+   * 
+   * {{{
+   *    @jsMessages.subset("MyMessages")(
+   *      "error.required",
+   *      "error.number"
+   *    )
+   * }}}
+   */
+  def subset(name: String = "Messages")(keys: String*)(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
+    script(jsmessages.JsMessages.subset(name)(keys: _*))
+
+  private def script(js: String) = Html("""<script type="text/javascript">%s</script>""".format(js))
 
 }
