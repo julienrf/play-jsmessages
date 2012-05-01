@@ -8,7 +8,7 @@ Add the following dependency to your Play project:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.julienrf" %% "play-jsmessages" % "1.0"
+    "com.github.julienrf" %% "play-jsmessages" % "1.1"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
