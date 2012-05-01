@@ -78,3 +78,19 @@ A template tag is also defined:
   ...
   @jsmessages.JsMessages("Messages")
 ```
+
+Last but not least, you can export only a subset of your i18n keys:
+
+```java
+public static Result jsMessages() {
+	final Set<String> keys = new HashSet<String>(3);
+	keys.add("key1");
+	keys.add("key2");
+	keys.add("key3");
+
+	
+	final Seq<String> seq = scala.collection.JavaConversions.asScalaSet(keys).toSeq();
+	final String js = jsmessages.JsMessages.subset("Messages", seq , play.api.Play.current() , lang());
+	return ok(js).as("application/javascript");
+}
+```
