@@ -1,7 +1,7 @@
 @()(implicit application: play.api.Application, lang: Lang)
 
 @main {
-  @jsmessages.html.jsMessages("Messages")
+  @jsmessages.html.jsMessages(Some("Messages"))
   @usage()
 
 }

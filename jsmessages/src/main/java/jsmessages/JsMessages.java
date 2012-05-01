@@ -10,43 +10,43 @@ public class JsMessages {
     /**
      * Generates a JavaScript function computing localized messages using, if possible,
      * a language handled by your application and set in the Accept-Language header.
-     * @param name Name of the JavaScript variable to create
-     * @return The variable definition
+     * @param namespace Namespace to which assign the generated function
+     * @return The function definition
      */
-    public static String generate(String name) {
-        return generate(name, Http.Context.Implicit.lang());
+    public static String generate(String namespace) {
+        return generate(namespace, Http.Context.Implicit.lang());
     }
 
     /**
      * Generates a JavaScript function computing localized messages using the given Lang.
-     * @param name Name of the JavaScript variable to create
+     * @param namespace Namespace to which assign the generated function
      * @param lang Lang to use
-     * @return The variable definition
+     * @return The function definition
      */
-    public static String generate(String name, Lang lang) {
-        return jsmessages.api.JsMessages.apply(name, Play.current(), lang);
+    public static String generate(String namespace, Lang lang) {
+        return jsmessages.api.JsMessages.apply(scala.Option.apply(namespace), Play.current(), lang);
     }
 
     /**
      * Generates a JavaScript function computing localized messages for a given set of i18n keys.
-     * @param name Name of the JavaScript variable to create
+     * @param namespace Namespace to which assign the generated function
      * @param keys Keys to use
-     * @return The variable definition
+     * @return The function definition
      */
-    public static String subset(String name, String... keys) {
-        return subset(name, Http.Context.Implicit.lang());
+    public static String subset(String namespace, String... keys) {
+        return subset(namespace, Http.Context.Implicit.lang());
     }
 
     /**
      * Generates a JavaScript function computing localized messages for a given set of i18n keys,
      * using the given Lang.
-     * @param name Name of the JavaScript variable to create
+     * @param namespace Namespace of which assign the generated function
      * @param lang Lang to use
      * @param keys Keys to use
-     * @return The variable definition
+     * @return The function definition
      */
-    public static String subset(String name, Lang lang, String... keys) {
-        return jsmessages.api.JsMessages.subset(name, Scala.toSeq(keys), Play.current(), lang);
+    public static String subset(String namespace, Lang lang, String... keys) {
+        return jsmessages.api.JsMessages.subset(scala.Option.apply(namespace), Scala.toSeq(keys), Play.current(), lang);
     }
 
 }

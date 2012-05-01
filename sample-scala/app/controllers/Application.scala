@@ -3,7 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.Play.current
-import jsmessages.JsMessages
+import jsmessages.api.JsMessages
 
 object Application extends Controller {
 
@@ -16,7 +16,7 @@ object Application extends Controller {
   }
 
   def jsMessages = Action { implicit request =>
-    Ok(JsMessages("Messages")).as(JAVASCRIPT)
+    Ok(JsMessages(Some("Messages"))).as(JAVASCRIPT)
   }
 
 }

@@ -2,7 +2,6 @@
 
 # Home page
 GET     /                           controllers.Application.index1()
-GET     /index2                     controllers.Application.index2()
 GET     /messages.js                controllers.Application.jsMessages()
 
 # Map static resources from the /public folder to the /assets URL path

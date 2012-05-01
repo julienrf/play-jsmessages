@@ -10,10 +10,6 @@ public class Application extends Controller {
         return ok(index1.render());
     }
 
-    public static Result index2() {
-        return ok(index2.render());
-    }
-
     public static Result jsMessages() {
         return ok(JsMessages.generate("Messages")).as("application/javascript");
     }

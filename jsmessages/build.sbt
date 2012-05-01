@@ -1,6 +1,6 @@
 name := "play-jsmessages"
 
-version := "1.2-SNAPSHOT"
+version := "1.2"
 
 organization := "com.github.julienrf"
 

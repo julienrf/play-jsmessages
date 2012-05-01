@@ -11,7 +11,7 @@ object jsMessages {
    * For example:
    * 
    * {{{
-   *   @jsMessages("MyMessages")
+   *   @jsMessages(Some("window.MyMessages"))
    * }}}
    * 
    * And you can use it in your JavaScript code as follows:
@@ -24,8 +24,8 @@ object jsMessages {
    * greeting=Hello {0}!
    * }}}
    */
-  def apply(name: String = "Messages")(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
-    script(JsMessages(name))
+  def apply(namespace: Option[String] = None)(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
+    script(JsMessages(namespace))
 
   /**
    * Generates a JavaScript function able to compute localized messages for a given keys subset.
@@ -33,14 +33,14 @@ object jsMessages {
    * Example:
    * 
    * {{{
-   *    @jsMessages.subset("MyMessages")(
+   *    @jsMessages.subset(Some("window.MyMessages"))(
    *      "error.required",
    *      "error.number"
    *    )
    * }}}
    */
-  def subset(name: String = "Messages")(keys: String*)(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
-    script(JsMessages.subset(name)(keys: _*))
+  def subset(namespace: Option[String] = None)(keys: String*)(implicit app: play.api.Application, lang: play.api.i18n.Lang) =
+    script(JsMessages.subset(namespace)(keys: _*))
 
   private def script(js: String) = Html("""<script type="text/javascript">%s</script>""".format(js))
 
