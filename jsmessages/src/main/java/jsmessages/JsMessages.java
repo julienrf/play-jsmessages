@@ -13,8 +13,8 @@ public class JsMessages {
      * @param name Name of the JavaScript variable to create
      * @return The variable definition
      */
-    public static String apply(String name) {
-        return apply(name, Http.Context.Implicit.lang());
+    public static String generate(String name) {
+        return generate(name, Http.Context.Implicit.lang());
     }
 
     /**
@@ -23,7 +23,7 @@ public class JsMessages {
      * @param lang Lang to use
      * @return The variable definition
      */
-    public static String apply(String name, Lang lang) {
+    public static String generate(String name, Lang lang) {
         return jsmessages.api.JsMessages.apply(name, Play.current(), lang);
     }
 
