@@ -1,6 +1,6 @@
 target/
-.project
-.classpath
-.cache
+.idea/
+.idea_modules/
 .settings/
-.target/
+*.iml
+user.sbt

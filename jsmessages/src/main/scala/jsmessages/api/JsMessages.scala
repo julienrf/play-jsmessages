@@ -54,11 +54,11 @@ object JsMessages {
   }
 
   def apply(namespace: Option[String], messages: Map[String, String]): String = {
-    import org.apache.commons.lang.StringEscapeUtils.escapeJavaScript
+    import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
     """%s(function(){var ms={%s}; return function(k){var m=ms[k]||k;for(var i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])} return m}})();""".format(
            namespace.map{_ + "="}.getOrElse(""),
            (for ((key, msg) <- messages) yield {
-             "'%s':'%s'".format(escapeJavaScript(key), escapeJavaScript(msg.replace("''", "'")))
+             "'%s':'%s'".format(escapeEcmaScript(key), escapeEcmaScript(msg.replace("''", "'")))
            }).mkString(",")
     )
   }
