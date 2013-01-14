@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import PlayProject._
+import play.Project._
 
 object ApplicationBuild extends Build {
 
@@ -8,11 +8,11 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0"
 
     val appDependencies = Seq(
-      "com.github.julienrf" %% "play-jsmessages" % "1.3"
+      "com.github.julienrf" %% "play-jsmessages" % "1.4-SNAPSHOT"
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
-      resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
+    val main = play.Project(appName, appVersion, appDependencies).settings(
+      resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo-snapshots/"
     )
 
 }
