@@ -1,6 +1,6 @@
 # Play JsMessages library
 
-This library allows to compute localized messages on client side, in Play 2.0 projects.
+This library allows to compute localized messages on client side, in Play 2 projects.
 
 ## Installation (using sbt)
 
@@ -13,13 +13,14 @@ resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.3"
+libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.4"
 ```
 
 Replace the version of the library with the one that targets your version of Play:
 
 * `1.2.1` for play-2.0 ;
-* `1.3` for play-2.0.4.
+* `1.3` for play-2.0.4 ;
+* `1.4` for play-2.1.0.
 
 ## Usage (Scala)
 
