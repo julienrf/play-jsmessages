@@ -1,6 +1,6 @@
   <script type="text/javascript">
     (function () {
-      var greet = Messages('greeting', 'World');
+      var greet = Messages('greeting', 'World') + " " + Messages(['badid', 'greeting'], 'There');
       document.body.appendChild(document.createTextNode(greet));
     })();
   </script>
