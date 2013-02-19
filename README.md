@@ -77,6 +77,20 @@ Then you can compute messages on client side:
   alert(Messages('greeting', 'World'));
 ```
 
+You can also provide alternative keys, that will be used in the main key is not defined:
+
+```javascript
+  alert(Messages('greeting', { alt: 'opening' } ));
+```
+
+You may combine alternative keys and parameters this way:
+
+```javascript
+  alert(Messages('greeting', { alt: 'opening', data: 'World' } ));
+```
+
+Note that both `alt` and `data` may be either strings or arrays. For `alt` keys will be tried in order.
+
 You can also inline the definition of the messages in a HTML template:
 
 ```html
