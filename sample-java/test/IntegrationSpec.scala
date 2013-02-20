@@ -15,7 +15,7 @@ class IntegrationSpec extends Specification {
 
         browser.goTo("http://localhost:3333/")
 
-        browser.$("body").getTexts().get(0) must equalTo ("Hello World!")
+        browser.$("body").getTexts().get(0) must equalTo ("Hello World! Hello There!")
 
         await(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"en").get).body must contain ("Hello {0}!")
 

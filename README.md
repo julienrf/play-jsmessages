@@ -77,6 +77,12 @@ Then you can compute messages on client side:
   alert(Messages('greeting', 'World'));
 ```
 
+You can also provide alternative keys, that will be used in the main key is not defined. Keys will be tried in order until a defined key is found.
+
+```javascript
+  alert(Messages(['greeting', 'opening'], 'World'));
+```
+
 You can also inline the definition of the messages in a HTML template:
 
 ```html
