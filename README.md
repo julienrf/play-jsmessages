@@ -20,7 +20,7 @@ Replace the version of the library with the one that targets your version of Pla
 
 * `1.2.1` for play-2.0 ;
 * `1.3` for play-2.0.4 ;
-* ³`1.4` for play-2.1.0.
+* >=`1.4` for play-2.1.0.
 
 ## Usage (Scala)
 
