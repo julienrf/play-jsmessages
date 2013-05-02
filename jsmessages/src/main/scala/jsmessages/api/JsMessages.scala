@@ -55,7 +55,7 @@ object JsMessages {
 
   def apply(namespace: Option[String], messages: Map[String, String]): String = {
     import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
-    """%s(function(){var ms={%s};return function(k){if(typeof k == "object"){for(var i=0;i<k.length&&!ms[k[i]];i++);var m=ms[k[i]]||k[0]}else{m=ms[k]||k}for(i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])}return m}})()""".format(
+    """%s(function(u){var ms={%s};return function(k){if(typeof k == "object"){for(var i=0;i<k.length&&ms[k[i]]!==u;i++);var m=ms[k[i]]||k[0]}else{m=((ms[k]!==u)?ms[k]:k)}for(i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])}return m}})()""".format(
            namespace.map{_ + "="}.getOrElse(""),
            (for ((key, msg) <- messages) yield {
              "'%s':'%s'".format(escapeEcmaScript(key), escapeEcmaScript(msg.replace("''", "'")))
