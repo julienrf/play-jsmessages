@@ -13,14 +13,14 @@ resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.4.1"
+libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.4.2"
 ```
 
 Replace the version of the library with the one that targets your version of Play:
 
 * `1.2.1` for play-2.0 ;
 * `1.3` for play-2.0.4 ;
-* â‰¥`1.4` for play-2.1.0.
+* ³`1.4` for play-2.1.0.
 
 ## Usage (Scala)
 
