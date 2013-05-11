@@ -34,7 +34,7 @@ public class JsMessages {
      * @return The function definition
      */
     public static String subset(String namespace, String... keys) {
-        return subset(namespace, Http.Context.Implicit.lang());
+        return subset(namespace, Http.Context.Implicit.lang(),keys);
     }
 
     /**
