@@ -1,7 +1,7 @@
-@()(implicit application: play.api.Application, lang: Lang)
+@(messages: jsmessages.api.JsMessages)(implicit lang: Lang)
 
 @main {
-  @jsmessages.html.jsMessages(Some("Messages"))
+  @messages.html(Some("window.Messages"))
   @usage()
 
 }

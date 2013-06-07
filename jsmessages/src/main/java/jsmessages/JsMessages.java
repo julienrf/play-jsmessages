@@ -1,11 +1,21 @@
 package jsmessages;
 
+import play.Application;
+import play.api.templates.Html;
 import play.i18n.Lang;
-import play.mvc.Http;
 import play.libs.Scala;
-import play.api.Play;
+import play.mvc.Http;
 
+/**
+ * Can generate a JavaScript function computing localized messages of a Play application
+ */
 public class JsMessages {
+
+    final jsmessages.api.JsMessages api;
+
+    public JsMessages(Application app) {
+        this.api = new jsmessages.api.JsMessages(app.getWrappedApplication());
+    }
 
     /**
      * Generates a JavaScript function computing localized messages using, if possible,
@@ -13,8 +23,8 @@ public class JsMessages {
      * @param namespace Namespace to which assign the generated function
      * @return The function definition
      */
-    public static String generate(String namespace) {
-        return generate(namespace, Http.Context.Implicit.lang());
+    public String generate(String namespace) {
+        return generate(namespace, Http.Context.current().lang());
     }
 
     /**
@@ -23,8 +33,8 @@ public class JsMessages {
      * @param lang Lang to use
      * @return The function definition
      */
-    public static String generate(String namespace, Lang lang) {
-        return jsmessages.api.JsMessages.apply(scala.Option.apply(namespace), Play.current(), lang);
+    public String generate(String namespace, Lang lang) {
+        return api.apply(scala.Option.apply(namespace), lang);
     }
 
     /**
@@ -33,8 +43,8 @@ public class JsMessages {
      * @param keys Keys to use
      * @return The function definition
      */
-    public static String subset(String namespace, String... keys) {
-        return subset(namespace, Http.Context.Implicit.lang(),keys);
+    public String subset(String namespace, String... keys) {
+        return subset(namespace, Http.Context.current().lang(),keys);
     }
 
     /**
@@ -45,8 +55,90 @@ public class JsMessages {
      * @param keys Keys to use
      * @return The function definition
      */
-    public static String subset(String namespace, Lang lang, String... keys) {
-        return jsmessages.api.JsMessages.subset(scala.Option.apply(namespace), Scala.toSeq(keys), Play.current(), lang);
+    public String subset(String namespace, Lang lang, String... keys) {
+        return api.subset(scala.Option.apply(namespace), Scala.toSeq(keys), lang);
     }
 
+    /**
+     * <p>Generates a JavaScript function computing localized messages.</p>
+     *
+     * For example:
+     *
+     * <pre>
+     *   @jsMessages.html("window.MyMessages", lang)
+     * </pre>
+     *
+     * Then use it in your JavaScript code as follows:
+     *
+     * <pre>
+     *   alert(MyMessages('greeting', 'World'));
+     * </pre>
+     *
+     * Provided you have the following message in your conf/messages file:
+     *
+     * <pre>
+     * greeting=Hello {0}!
+     * </pre>
+     */
+    public Html html(String namespace, Lang lang) {
+        return api.html(scala.Option.apply(namespace), lang);
+    }
+
+    /**
+     * <p>Generates a JavaScript function computing localized messages using the language provided by the current HTTP context</p>
+     *
+     * For example:
+     *
+     * <pre>
+     *   @jsMessages.html("window.MyMessages")
+     * </pre>
+     *
+     * Then use it in your JavaScript code as follows:
+     *
+     * <pre>
+     *   alert(MyMessages('greeting', 'World'));
+     * </pre>
+     *
+     * Provided you have the following message in your conf/messages file:
+     *
+     * <pre>
+     * greeting=Hello {0}!
+     * </pre>
+     */
+    public Html html(String namespace) {
+        return html(namespace, Http.Context.current().lang());
+    }
+
+    /**
+     * <p>Generates a JavaScript function computing localized messages for a given keys subset.</p>
+     *
+     * <p>Example:</p>
+     *
+     * <pre>
+     *    @jsMessages.subsetHtml("window.MyMessages", lang)(
+     *      "error.required",
+     *      "error.number"
+     *    )
+     * </pre>
+     */
+    public Html subsetHtml(String namespace, Lang lang, String... keys) {
+        return api.subsetHtml(scala.Option.apply(namespace), Scala.toSeq(keys), lang);
+    }
+
+    /**
+     * <p>Generates a JavaScript function computing localized messages for a given keys subset using the language provided
+     * by the current HTTP context</p>
+     *
+     * <p>Example:</p>
+     *
+     * <pre>
+     *    @jsMessages.subsetHtml("window.MyMessages", lang)(
+     *      "error.required",
+     *      "error.number"
+     *    )
+     * </pre>
+     */
+    public Html subsetHtml(String namespace, String... keys) {
+        return subsetHtml(namespace, Http.Context.current().lang(), keys);
+    }
 }

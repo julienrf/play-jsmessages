@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0"
 
     val appDependencies = Seq(
-      "com.github.julienrf" %% "play-jsmessages" % "1.4.2"
+      "com.github.julienrf" %% "play-jsmessages" % "1.5.0-SNAPSHOT"
     )
 
     val main = play.Project(appName, appVersion, appDependencies).settings(
