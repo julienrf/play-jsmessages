@@ -2,21 +2,20 @@
 
 This library allows to compute localized messages on client-side, in Play 2 projects.
 
-Take a look at the [Scala](/julienrf/play-jsmessages/tree/1.5.x/sample-scala) and
-[Java](/julienrf/play-jsmessages/tree/1.5.x/sample-java) samples to see it in action.
+Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to see it in action.
 
 ## Installation (using sbt)
 
 You will need to add the following resolver:
 
 ```scala
-resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo-snapshots/"
+resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
 ```
 
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.5.0-SNAPSHOT"
+libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.5.0"
 ```
 
 Replace the version of the library with the one that targets your version of Play:
