@@ -142,3 +142,7 @@ a defined key is found.
 * v1.5.0
   - Fix the `subset` method of the Java API (thanks to Seppel Hardt) ;
   - Refactor the whole API in order to make it more extensible (thanks to Jacques Bachellerie).
+
+## License
+
+This content is released under the [MIT License](http://opensource.org/licenses/mit-license.php).
