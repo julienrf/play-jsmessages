@@ -81,7 +81,20 @@ class JsMessages(implicit app: Application) {
    */
   def apply(namespace: Option[String], messages: Map[String, String]): String = {
     import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
-    """%s(function(u){var ms={%s};return function(k){var m;if(typeof k == "object"){for(var i=0;i<k.length&&ms[k[i]]===u;i++);m=ms[k[i]]||k[0]}else{m=((ms[k]!==u)?ms[k]:k)}for(i=1;i<arguments.length;i++){m=m.replace('{'+(i-1)+'}',arguments[i])}return m}})()""".format(
+    """ #%s(function(u){var f = function ff(k){
+          #var m;
+          #if(typeof k==='object'){
+            #for(var i=0,l=k.length;i<l&&ff.messages[k[i]]===u;++i);
+            #m=ff.messages[k[i]]||k[0]
+          #}else{
+            #m=((ff.messages[k]!==u)?ff.messages[k]:k)
+          #}
+          #for(i=1;i<arguments.length;i++){
+            #m=m.replace('{'+(i-1)+'}',arguments[i])
+          #}
+          #return m};
+          #f.messages={%s};
+          #return f})()""".stripMargin('#').format(
            namespace.map{_ + "="}.getOrElse(""),
            (for ((key, msg) <- messages) yield {
              "'%s':'%s'".format(escapeEcmaScript(key), escapeEcmaScript(msg.replace("''", "'")))
