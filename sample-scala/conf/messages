@@ -1,2 +1,4 @@
 greeting=Hello {0}!
 empty=
+root.parent.child=Complex key
+multiple.arguments=Arg0 {0} and arg1 {1} are on a boat
