@@ -81,13 +81,13 @@ class JsMessages(implicit app: Application) {
    */
   def apply(namespace: Option[String], messages: Map[String, String]): String = {
     import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
-    """ #%s(function(u){var f = function ff(k){
+    """ #%s(function(u){function f(k){
           #var m;
           #if(typeof k==='object'){
-            #for(var i=0,l=k.length;i<l&&ff.messages[k[i]]===u;++i);
-            #m=ff.messages[k[i]]||k[0]
+            #for(var i=0,l=k.length;i<l&&f.messages[k[i]]===u;++i);
+            #m=f.messages[k[i]]||k[0]
           #}else{
-            #m=((ff.messages[k]!==u)?ff.messages[k]:k)
+            #m=((f.messages[k]!==u)?f.messages[k]:k)
           #}
           #for(i=1;i<arguments.length;i++){
             #m=m.replace('{'+(i-1)+'}',arguments[i])
