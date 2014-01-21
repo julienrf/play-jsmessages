@@ -9,5 +9,23 @@
     </head>
     <body>
         @content
+
+        <script type="text/javascript">
+          (function () {
+            var tests = [];
+
+            tests.push(Messages('greeting', 'World', 'Ignore this') + Messages('empty'));
+            tests.push(Messages(['wrong', 'try again', 'greeting'], 'People'));
+            tests.push(Messages('root.parent.child'));
+            tests.push(Messages('multiple.arguments', 'Zero', 1));
+            tests.push(Messages('wrong.key'));
+
+            for (var i = 0, l = tests.length; i < l; ++i) {
+              var el = document.createElement('div');
+              el.innerHTML = tests[i];
+              document.body.appendChild(el);
+            }
+          })();
+        </script>
     </body>
 </html>
