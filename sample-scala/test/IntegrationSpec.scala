@@ -19,7 +19,11 @@ class IntegrationSpec extends Specification {
           "Hello People!",
           "Complex key",
           "Arg0 Zero and arg1 1 are on a boat",
-          "wrong.key"
+          "wrong.key",
+          "Hi there World!",
+          "Now valid",
+          "Greetings baby!",
+          "Zero, 1111 and true"
         ).zipWithIndex
 
         for (i <- 1 to 2) {

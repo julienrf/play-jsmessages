@@ -8,6 +8,10 @@ object Application extends Controller {
 
   val messages = new JsMessages
 
+  val index = Action {
+    Ok(views.html.index1())
+  }
+
   val index1 = Action {
     Ok(views.html.index1())
   }
