@@ -2,7 +2,7 @@ parallelExecution in Global := false
 
 val commonSettings = Seq(
   organization := "com.github.julienrf",
-  version := "1.5.2-SNAPSHOT",
+  version := "1.5.2",
   scalaVersion := "2.10.0"
 )
 

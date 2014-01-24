@@ -15,7 +15,7 @@ resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.5.1"
+libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.5.2"
 ```
 
 Replace the version of the library with the one that targets your version of Play:
@@ -23,7 +23,7 @@ Replace the version of the library with the one that targets your version of Pla
 * `1.2.1` for play-2.0 ;
 * `1.3` for play-2.0.4 ;
 * `1.5.0` for play-2.1.x ;
-* `1.5.1` for play-2.2.x.
+* `1.5.2` for play-2.2.x.
 
 ## Usage (Scala)
 
@@ -134,7 +134,21 @@ a defined key is found.
   alert(Messages(['greeting', 'opening'], 'World'));
 ```
 
+The generated function stores the messages map in a `messages` property that is publicly accessible so you can update the messages without reloading the page:
+
+```javascript
+// Update a single message
+Messages.messages['greeting'] = 'Hi there {0}!';
+// Update all messages
+Messages.messages = {
+  'greeting': 'Hello, {0}!'
+}
+```
+
 ## Changelog
+
+* v1.5.2
+  - Export the `messages` property on client-side (thanks to Paul Dijou).
 
 * v1.5.1
   - Play 2.2.x compatibility.
