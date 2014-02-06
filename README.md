@@ -12,10 +12,10 @@ You will need to add the following resolver:
 resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
 ```
 
-Add a dependency on the following artifact:
+Add a dependency on the following artifact (prior to `1.5.2` the artifact name was `play-jsmessages`):
 
 ```scala
-libraryDependencies += "com.github.julienrf" %% "play-jsmessages" % "1.5.2"
+libraryDependencies += "com.github.julienrf" %% "jsmessages" % "1.5.2"
 ```
 
 Replace the version of the library with the one that targets your version of Play:
