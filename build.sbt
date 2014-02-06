@@ -9,6 +9,7 @@ val commonSettings = Seq(
 lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
+    name := "play-jsmessages",
     publishTo := Some(Resolver.file("Github pages", Path.userHome / "sites" / "julienrf.github.com" / (if (version.value.trim.endsWith("SNAPSHOT")) "repo-snapshots" else "repo") asFile)),
     javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     libraryDependencies += "com.typesafe.play" %% "play" % "2.2.0",
