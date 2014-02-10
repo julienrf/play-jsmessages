@@ -1,4 +1,4 @@
-# Play JsMessages library
+# Play JsMessages library [![Build Status](https://travis-ci.org/julienrf/play-jsmessages.png?branch=master)](https://travis-ci.org/julienrf/play-jsmessages)
 
 This library allows to compute localized messages on client-side, in Play 2 projects.
 
