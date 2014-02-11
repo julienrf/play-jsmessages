@@ -32,10 +32,18 @@ class IntegrationSpec extends Specification {
           tests.foreach { kv =>
             divs.get(kv._2).getText must equalTo (kv._1)
           }
+
+          browser.goTo("http://localhost:3333/all/" + i)
+          val allDivs = browser.$("div")
+          tests.foreach { kv =>
+            allDivs.get(kv._2).getText must equalTo (kv._1)
+          }
         }
 
         pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"en").get()).body must contain ("Hello {0}!")
         pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"fr").get()).body must contain ("Bonjour {0} !")
+        pawait(WS.url("http://localhost:3333/allMessages.js").get()).body must contain ("Hello {0}!")
+        pawait(WS.url("http://localhost:3333/allMessages.js").get()).body must contain ("Bonjour {0} !")
       }
     }
   }
