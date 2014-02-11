@@ -38,6 +38,15 @@ public class JsMessages {
     }
 
     /**
+     * Generates a JavaScript function computing all messages.
+     * @param namespace Namespace to which assign the generated function
+     * @return The function definition
+     */
+    public String generateAll(String namespace) {
+        return api.all(scala.Option.apply(namespace));
+    }
+
+    /**
      * Generates a JavaScript function computing localized messages for a given set of i18n keys.
      * @param namespace Namespace to which assign the generated function
      * @param keys Keys to use
@@ -57,6 +66,17 @@ public class JsMessages {
      */
     public String subset(String namespace, Lang lang, String... keys) {
         return api.subset(scala.Option.apply(namespace), Scala.toSeq(keys), lang);
+    }
+
+    /**
+     * Generates a JavaScript function computing all messages,
+     * using the given Lang.
+     * @param namespace Namespace of which assign the generated function
+     * @param keys Keys to use
+     * @return The function definition
+     */
+    public String allSubset(String namespace, String... keys) {
+        return api.allSubset(scala.Option.apply(namespace), Scala.toSeq(keys));
     }
 
     /**
@@ -110,19 +130,28 @@ public class JsMessages {
     }
 
     /**
-     * <p>Generates a JavaScript function computing localized messages for a given keys subset.</p>
+     * <p>Generates a JavaScript function computing all messages.</p>
      *
-     * <p>Example:</p>
+     * For example:
      *
      * <pre>
-     *    @jsMessages.subsetHtml("window.MyMessages", lang)(
-     *      "error.required",
-     *      "error.number"
-     *    )
+     *   @jsMessages.allHtml("window.MyMessages")
+     * </pre>
+     *
+     * Then use it in your JavaScript code as follows:
+     *
+     * <pre>
+     *   alert(MyMessages('en', 'greeting', 'World'));
+     * </pre>
+     *
+     * Provided you have the following message in your conf/messages file:
+     *
+     * <pre>
+     * greeting=Hello {0}!
      * </pre>
      */
-    public Html subsetHtml(String namespace, Lang lang, String... keys) {
-        return api.subsetHtml(scala.Option.apply(namespace), Scala.toSeq(keys), lang);
+    public Html allHtml(String namespace) {
+        return api.allHtml(scala.Option.apply(namespace));
     }
 
     /**
@@ -140,5 +169,37 @@ public class JsMessages {
      */
     public Html subsetHtml(String namespace, String... keys) {
         return subsetHtml(namespace, Http.Context.current().lang(), keys);
+    }
+
+    /**
+     * <p>Generates a JavaScript function computing localized messages for a given keys subset.</p>
+     *
+     * <p>Example:</p>
+     *
+     * <pre>
+     *    @jsMessages.subsetHtml("window.MyMessages", lang)(
+     *      "error.required",
+     *      "error.number"
+     *    )
+     * </pre>
+     */
+    public Html subsetHtml(String namespace, Lang lang, String... keys) {
+        return api.subsetHtml(scala.Option.apply(namespace), Scala.toSeq(keys), lang);
+    }
+
+    /**
+     * <p>Generates a JavaScript function computing all messages for a given keys subset.</p>
+     *
+     * <p>Example:</p>
+     *
+     * <pre>
+     *    @jsMessages.allSubsetHtml("window.MyMessages")(
+     *      "error.required",
+     *      "error.number"
+     *    )
+     * </pre>
+     */
+    public Html allSubsetHtml(String namespace, String... keys) {
+        return api.allSubsetHtml(scala.Option.apply(namespace), Scala.toSeq(keys));
     }
 }
