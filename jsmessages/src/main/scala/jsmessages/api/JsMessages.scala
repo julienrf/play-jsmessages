@@ -3,6 +3,7 @@ package jsmessages.api
 import play.api.i18n._
 import play.api.Application
 import play.api.templates.Html
+import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
 
 /**
  * Can generate a JavaScript function computing localized messages of a Play application
@@ -13,19 +14,57 @@ class JsMessages(implicit app: Application) {
   /**
    * The application’s messages to use by default, as a map of (key -> message)
    */
-  val defaultMessages = Messages.messages.get("default").getOrElse(Map.empty)
+  val defaultMessages: Map[String, String] = escapeMap(Messages.messages.get("default").getOrElse(Map.empty))
+
+  /**
+   * Messages used by Play Framework
+   */
+  val defaultPlayMessages: Map[String, String] =  escapeMap(Messages.messages.get("default.play").getOrElse(Map.empty))
+
+  /**
+   * The messages defined in the given Play application `app`, for all languages, as a map of (lang -> map(key -> message))
+   * with addition of default messages and Play Framework messages
+   */
+  val allMessages: Map[String, Map[String, String]] =
+    Messages.messages.mapValues(v => escapeMap(v)) ++
+    Map("default" -> defaultMessages, "default.play" -> defaultPlayMessages)
+
+  /**
+   *  Nearly JSON formated string of allMessages.
+   */
+  val allMessagesString: String = formatAllMap(allMessages)
+
+  /**
+   * Cache to memorize computed messages for each available lang
+   * Computation consists of merging default messages, default Play messages,
+   * messages for the language of the lang and messages of the lang itself.
+   */
+  val messagesCache: Map[String, Map[String, String]] = allMessages.map { kv =>
+    val language = if (kv._1.contains("-")) { Some(kv._1.split("-")(0)) } else { None }
+
+    kv._1 -> (defaultMessages ++
+    defaultPlayMessages ++
+    language.flatMap(lang => allMessages.get(lang)).getOrElse(Map.empty) ++
+    kv._2)
+  }
+
+  /**
+   *  Cache to memorize the nearly JSON formated string of each lang messages.
+   */
+  val messagesStringCache: Map[String, String] = messagesCache.mapValues(v => formatMap(v))
 
   /**
    * @param lang Language to retrieve messages for
    * @return The messages defined in the given Play application `app`, for the given language `lang`, as a map of (key -> message)
    */
-  def messages(implicit lang: Lang): Map[String, String] =
-    defaultMessages ++ Messages.messages.get(lang.code).getOrElse(Map.empty)
+  def messages(implicit lang: Lang): Map[String, String] = messagesCache.get(lang.code).getOrElse(Map.empty)
 
   /**
-   * @return The messages defined in the given Play application `app`, for all languages, as a map of (lang -> map(key -> message))
+   * @param lang Language to retrieve messages for
+   * @return The nearly JSON formated string of messages defined in the given Play application `app`,
+   * for the given language `lang`, as a map of (key -> message)
    */
-  def allMessages: Map[String, Map[String, String]] = Messages.messages.mapValues(defaultMessages ++ _)
+  def messagesString(implicit lang: Lang): String = messagesStringCache.get(lang.code).getOrElse("")
 
   /**
    * Generates a JavaScript function computing localized messages.
@@ -56,7 +95,7 @@ class JsMessages(implicit app: Application) {
    * just generate a function. Otherwise it will generate a function and assign it to the given namespace. Note: you can
    * set something like `Some("var Messages")` to use a fresh variable.
    */
-  def apply(namespace: Option[String] = None)(implicit lang: Lang): String = apply(namespace, messages)
+  def apply(namespace: Option[String] = None)(implicit lang: Lang): String = apply(namespace, messagesString)
 
   /**
    * Generates a JavaScript function computing all messages.
@@ -87,7 +126,7 @@ class JsMessages(implicit app: Application) {
    * just generate a function. Otherwise it will generate a function and assign it to the given namespace. Note: you can
    * set something like `Some("var Messages")` to use a fresh variable.
    */
-  def all(namespace: Option[String] = None): String = all(namespace, allMessages)
+  def all(namespace: Option[String] = None): String = all(namespace, allMessagesString)
 
   /**
    * Generates a JavaScript function computing localized messages for a given keys subset.
@@ -125,8 +164,11 @@ class JsMessages(implicit app: Application) {
    * @param messages Map of (key -> message) to use
    * @return A JavaScript fragment defining a function computing localized messages
    */
-  def apply(namespace: Option[String], messages: Map[String, String]): String = {
-    import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
+  def apply(namespace: Option[String], messages: Map[String, String]): String =
+    apply(namespace, formatMap(messages))
+
+
+  def apply(namespace: Option[String], messages: String): String = {
     """ #%s(function(u){function f(k){
           #var m;
           #if(typeof k==='object'){
@@ -142,9 +184,7 @@ class JsMessages(implicit app: Application) {
           #f.messages={%s};
           #return f})()""".stripMargin('#').format(
            namespace.map{_ + "="}.getOrElse(""),
-           (for ((key, msg) <- messages) yield {
-             "'%s':'%s'".format(escapeEcmaScript(key), escapeEcmaScript(msg.replace("''", "'")))
-           }).mkString(",")
+           messages
     )
   }
 
@@ -154,29 +194,47 @@ class JsMessages(implicit app: Application) {
    * @param messages Map of (lang -> Map of (key -> message)) to use
    * @return A JavaScript fragment defining a function computing all messages
    */
-  def all(namespace: Option[String], messages: Map[String, Map[String, String]]): String = {
-    import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
+  def all(namespace: Option[String], messages: Map[String, Map[String, String]]): String =
+    all(namespace, formatAllMap(messages))
+
+  def all(namespace: Option[String], messages: String): String = {
+    // g(lang,key): given a lang, try to find a key among all possible messages,
+    //              will try lang, lang.language, default and finally default.play
+    // h(lang,key,args...): return the formatted message retrieved from g(lang,key)
+    // f(lang,key,args...): if only lang, return anonymous function always calling h by prefixing arguments with lang
+    //                      else, just call h with current arguments
     """ #%s(function(u){function f(l,k){
-          #var m;
-          #if(typeof k==='object'){
-            #for(var i=0,le=k.length;i<le&&f.messages[l][k[i]]===u;++i);
-            #m=f.messages[l][k[i]]||k[0]
+          #function g(l,k){
+            #var r=f.messages[l][k];
+            #if (r===u&&l.indexOf('-')>-1) { r=f.messages[l.split('-')[0]][k];}
+            #if (r===u) {r=f.messages['default'][k];}
+            #if (r===u) {r=f.messages['default.play'][k];}
+            #return r;
+          #}
+          #function h(l,k){
+            #var m;
+            #if(typeof k==='object'){
+              #for(var i=0,le=k.length;i<le&&g(l,k[i])===u;++i);
+              #m=g(l,k[i])||k[0];
+            #}else{
+              #m=g(l,k);
+              #m=((m!==u)?m:k);
+            #}
+            #for(i=2,le=arguments.length;i<le;++i){
+              #m=m.replace('{'+(i-2)+'}',arguments[i])
+            #}
+            #return m;
+          #}
+          #if(k===undefined){
+            #return function() {Array.prototype.splice.call(arguments, 0, 0, l); return h.apply(u, arguments);};
           #}else{
-            #m=((f.messages[l][k]!==u)?f.messages[l][k]:k)
+            #return h.apply(u, arguments);
           #}
-          #for(i=2,le=arguments.length;i<le;++i){
-            #m=m.replace('{'+(i-2)+'}',arguments[i])
-          #}
-          #return m};
-          #f.messages={%s};
-          #return f})()""".stripMargin('#').format(
-           namespace.map{_ + "="}.getOrElse(""),
-           (for ((lang, messages) <- allMessages) yield {
-             "'%s':{%s}".format(lang, (for ((key, msg) <- messages) yield {
-               "'%s':'%s'".format(escapeEcmaScript(key), escapeEcmaScript(msg.replace("''", "'")))
-             }).mkString(","))
-           }).mkString(",")
-    )
+        #}
+        #f.messages={%s};
+        #return f})()""".stripMargin('#').format(
+        namespace.map{_ + "="}.getOrElse(""),
+        messages)
   }
 
   /**
@@ -259,9 +317,23 @@ class JsMessages(implicit app: Application) {
 
   private def script(js: String) = Html(s"""<script type="text/javascript">$js</script>""")
 
-  private def subsetMap(map: Map[String, String], keys: String*): Map[String, String] =
+  private def subsetMap(values: Map[String, String], keys: String*): Map[String, String] =
     (for {
       key <- keys
-      message <- map.get(key)
+      message <- values.get(key)
     } yield (key, message)).toMap
+
+  private def escapeMap(values: Map[String, String]): Map[String, String] = values.map {
+    kv => escapeEcmaScript(kv._1) -> escapeEcmaScript(kv._2.replace("''", "'"))
+  }
+
+  private def formatMap(values: Map[String, String]): String =
+    (for ((key, msg) <- values) yield {
+      "'%s':'%s'".format(key, msg)
+    }).mkString(",")
+
+  private def formatAllMap(values: Map[String, Map[String, String]]): String =
+    (for ((lang, messages) <- values) yield {
+      "'%s':{%s}".format(lang, formatMap(messages))
+    }).mkString(",")
 }
