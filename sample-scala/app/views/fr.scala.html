@@ -1,0 +1,51 @@
+@()
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>JsMessages Scala Sample</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    </head>
+    <body>
+        <script type="text/javascript" src="@routes.Application.allJsMessages()"></script>
+        <script type="text/javascript">
+          (function () {
+            var tests = [];
+            var MessagesFr = Messages('fr');
+
+            tests.push(MessagesFr('greeting', 'World', 'Ignore this') + MessagesFr('empty'));
+            tests.push(MessagesFr(['wrong', 'try again', 'greeting'], 'People'));
+            tests.push(MessagesFr('root.parent.child'));
+            tests.push(MessagesFr('multiple.arguments', 'Zero', 1));
+            tests.push(MessagesFr('wrong.key'));
+            tests.push(MessagesFr('apostrophe'));
+
+            // Updating some messages
+            Messages.messages['fr']['greeting'] = 'Salut ici {0}!';
+            Messages.messages['fr']['wrong.key'] = 'Désormais valide';
+
+            tests.push(MessagesFr('greeting', 'World', 'Ignore this'));
+            tests.push(MessagesFr('wrong.key'));
+
+            // Updating all messages
+            Messages.messages = {'en': {
+              'greeting': 'Greetings baby!',
+              'multiple.arguments': '{0}, {1} and {2}'
+            }, 'fr': {
+              'greeting': 'Salut toi!',
+              'multiple.arguments': '{0}, {1} et {2}'
+            }};
+
+            tests.push(MessagesFr('greeting', 'No World', 'Ignore this'));
+            tests.push(MessagesFr('multiple.arguments', 'Zero', 1111, true));
+
+            for (var i = 0, l = tests.length; i < l; ++i) {
+              var el = document.createElement('div');
+              el.innerHTML = tests[i];
+              document.body.appendChild(el);
+            }
+          })();
+        </script>
+    </body>
+</html>

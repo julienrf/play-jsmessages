@@ -1,4 +1,4 @@
-@(content: Html)
+@()
 
 <!DOCTYPE html>
 
@@ -8,25 +8,25 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
     </head>
     <body>
-        @content
-
+        <script type="text/javascript" src="@routes.Application.allJsMessages()"></script>
         <script type="text/javascript">
           (function () {
             var tests = [];
+            var MessagesEn = Messages('en');
 
-            tests.push(Messages('en', 'greeting', 'World', 'Ignore this') + Messages('en', 'empty'));
-            tests.push(Messages('en', ['wrong', 'try again', 'greeting'], 'People'));
-            tests.push(Messages('en', 'root.parent.child'));
-            tests.push(Messages('en', 'multiple.arguments', 'Zero', 1));
-            tests.push(Messages('en', 'wrong.key'));
-            tests.push(Messages('en', 'apostrophe'));
+            tests.push(MessagesEn('greeting', 'World', 'Ignore this') + MessagesEn('empty'));
+            tests.push(MessagesEn(['wrong', 'try again', 'greeting'], 'People'));
+            tests.push(MessagesEn('root.parent.child'));
+            tests.push(MessagesEn('multiple.arguments', 'Zero', 1));
+            tests.push(MessagesEn('wrong.key'));
+            tests.push(MessagesEn('apostrophe'));
 
             // Updating some messages
             Messages.messages['en']['greeting'] = 'Hi there {0}!';
             Messages.messages['en']['wrong.key'] = 'Now valid';
 
-            tests.push(Messages('en', 'greeting', 'World', 'Ignore this'));
-            tests.push(Messages('en', 'wrong.key'));
+            tests.push(MessagesEn('greeting', 'World', 'Ignore this'));
+            tests.push(MessagesEn('wrong.key'));
 
             // Updating all messages
             Messages.messages = {'en': {
@@ -37,8 +37,8 @@
               'multiple.arguments': '{0}, {1} et {2}'
             }};
 
-            tests.push(Messages('en', 'greeting', 'No World', 'Ignore this'));
-            tests.push(Messages('en', 'multiple.arguments', 'Zero', 1111, true));
+            tests.push(MessagesEn('greeting', 'No World', 'Ignore this'));
+            tests.push(MessagesEn('multiple.arguments', 'Zero', 1111, true));
 
             for (var i = 0, l = tests.length; i < l; ++i) {
               var el = document.createElement('div');

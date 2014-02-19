@@ -1,2 +1,3 @@
 greeting=Bonjour {0} !
 root.parent.child=Clé complexe
+apostrophe=Salut l''ami
