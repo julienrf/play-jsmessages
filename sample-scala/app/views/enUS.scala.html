@@ -1,0 +1,54 @@
+@()
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>JsMessages Scala Sample</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    </head>
+    <body>
+        <script type="text/javascript" src="@routes.Application.allJsMessages()"></script>
+        <script type="text/javascript">
+          (function () {
+            var tests = [];
+            var MessagesEn = Messages('en-US');
+
+            tests.push(MessagesEn('greeting', 'World', 'Ignore this') + MessagesEn('empty'));
+            tests.push(MessagesEn(['wrong', 'try again', 'greeting'], 'People'));
+            tests.push(MessagesEn('root.parent.child'));
+            tests.push(MessagesEn('multiple.arguments', 'Zero', 1));
+            tests.push(MessagesEn('wrong.key'));
+            tests.push(MessagesEn('apostrophe'));
+
+            // Updating some messages
+            Messages.messages['en-US']['greeting'] = 'Hi there {0} US!';
+            Messages.messages['en-US']['wrong.key'] = 'Now valid US';
+
+            tests.push(MessagesEn('greeting', 'World', 'Ignore this'));
+            tests.push(MessagesEn('wrong.key'));
+
+            // Updating all messages
+            Messages.messages = {'en-US': {
+              'greeting': 'Greetings baby US!',
+              'multiple.arguments': '{0}, {1} and {2}'
+            },'en': {
+              'greeting': 'Greetings baby!',
+              'multiple.arguments': '{0}, {1} and {2}'
+            }, 'fr': {
+              'greeting': 'Salut toi!',
+              'multiple.arguments': '{0}, {1} et {2}'
+            }};
+
+            tests.push(MessagesEn('greeting', 'No World', 'Ignore this'));
+            tests.push(MessagesEn('multiple.arguments', 'Zero', 1111, true));
+
+            for (var i = 0, l = tests.length; i < l; ++i) {
+              var el = document.createElement('div');
+              el.innerHTML = tests[i];
+              document.body.appendChild(el);
+            }
+          })();
+        </script>
+    </body>
+</html>

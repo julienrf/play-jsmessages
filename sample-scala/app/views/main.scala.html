@@ -22,15 +22,15 @@
             tests.push(Messages('apostrophe'));
 
             // Updating some messages
-            Messages.messages['greeting'] = 'Hi there {0}!';
-            Messages.messages['wrong.key'] = 'Now valid';
+            Messages.messages['greeting'] = 'Hi there {0} US!';
+            Messages.messages['wrong.key'] = 'Now valid US';
 
             tests.push(Messages('greeting', 'World', 'Ignore this'));
             tests.push(Messages('wrong.key'));
 
             // Updating all messages
             Messages.messages = {
-              'greeting': 'Greetings baby!',
+              'greeting': 'Greetings baby US!',
               'multiple.arguments': '{0}, {1} and {2}'
             };
 

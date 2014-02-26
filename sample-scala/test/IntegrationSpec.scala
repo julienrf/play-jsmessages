@@ -27,6 +27,19 @@ class IntegrationSpec extends Specification {
           "Zero, 1111 and true"
         ).zipWithIndex
 
+        val testsEnUS = List(
+          "Hello US World!",
+          "Hello US People!",
+          "Complex key",
+          "Arg0 Zero and arg1 1 are on a boat",
+          "wrong.key",
+          "I'm happy!",
+          "Hi there World US!",
+          "Now valid US",
+          "Greetings baby US!",
+          "Zero, 1111 and true"
+        ).zipWithIndex
+
         val testsFr = List(
           "Bonjour World !",
           "Bonjour People !",
@@ -43,7 +56,7 @@ class IntegrationSpec extends Specification {
         for (i <- 1 to 2) {
           browser.goTo("http://localhost:3333/test/" + i)
           val divs = browser.$("div")
-          testsEn.foreach { kv =>
+          testsEnUS.foreach { kv =>
             divs.get(kv._2).getText must equalTo (kv._1)
           }
 
@@ -58,6 +71,12 @@ class IntegrationSpec extends Specification {
         val allDivsEn = browser.$("div")
         testsEn.foreach { kv =>
           allDivsEn.get(kv._2).getText must equalTo (kv._1)
+        }
+
+        browser.goTo("http://localhost:3333/enUS")
+        val allDivsEnUS = browser.$("div")
+        testsEnUS.foreach { kv =>
+          allDivsEnUS.get(kv._2).getText must equalTo (kv._1)
         }
 
         browser.goTo("http://localhost:3333/fr")
