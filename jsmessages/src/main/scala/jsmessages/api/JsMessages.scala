@@ -26,8 +26,7 @@ class JsMessages(implicit app: Application) {
    * with addition of default messages and Play Framework messages
    */
   val allMessages: Map[String, Map[String, String]] =
-    Messages.messages.mapValues(v => escapeMap(v)) ++
-    Map("default" -> defaultMessages, "default.play" -> defaultPlayMessages)
+    Messages.messages.mapValues(v => escapeMap(v)) ++ Map("default.play" -> defaultPlayMessages)
 
   /**
    *  Nearly JSON formated string of allMessages.
@@ -42,10 +41,12 @@ class JsMessages(implicit app: Application) {
   val messagesCache: Map[String, Map[String, String]] = allMessages.map { kv =>
     val language = if (kv._1.contains("-")) { Some(kv._1.split("-")(0)) } else { None }
 
-    kv._1 -> (defaultMessages ++
-    defaultPlayMessages ++
-    language.flatMap(lang => allMessages.get(lang)).getOrElse(Map.empty) ++
-    kv._2)
+    kv._1 -> (
+      defaultPlayMessages ++
+      defaultMessages ++
+      language.flatMap(lang => allMessages.get(lang)).getOrElse(Map.empty) ++
+      kv._2
+    )
   }
 
   /**
@@ -160,7 +161,8 @@ class JsMessages(implicit app: Application) {
 
   /**
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
-   *                  just return a literal function. Otherwise it will
+   *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
+   *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
    * @param messages Map of (key -> message) to use
    * @return A JavaScript fragment defining a function computing localized messages
    */
@@ -190,51 +192,85 @@ class JsMessages(implicit app: Application) {
 
   /**
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
-   *                  just return a literal function. Otherwise it will
+   *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
+   *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
    * @param messages Map of (lang -> Map of (key -> message)) to use
    * @return A JavaScript fragment defining a function computing all messages
+   *
+   * For example:
+   *
+   * {{{
+   *   @jsMessages.all(Some("window.MyMessages"), Messages.messages)
+   * }}}
+   *
+   * Then use it in your JavaScript code as follows:
+   *
+   * {{{
+   *   alert(MyMessages('en', 'greeting', 'World'));
+   * }}}
+   *
+   * Or keeping reference to a particular lang:
+   *
+   * {{{
+   *   var MyMessagesEn = MyMessages('en');
+   *   alert(MyMessagesEn('greeting', 'World'));
+   * }}}
+   *
+   * Provided you have the following message in your conf/messages file:
+   *
+   * {{{
+   * greeting=Hello {0}!
+   * }}}
    */
   def all(namespace: Option[String], messages: Map[String, Map[String, String]]): String =
     all(namespace, formatAllMap(messages))
 
+  /**
+   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
+   *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
+   *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
+   * @param messages String correctly formated as JSON corresponding the to Map of messages.
+   * @return A JavaScript fragment defining a function computing all messages
+   */
   def all(namespace: Option[String], messages: String): String = {
-    // g(lang,key): given a lang, try to find a key among all possible messages,
+    // g(key): given a lang, try to find a key among all possible messages,
     //              will try lang, lang.language, default and finally default.play
-    // h(lang,key,args...): return the formatted message retrieved from g(lang,key)
+    // h(key,args...): return the formatted message retrieved from g(lang,key)
     // f(lang,key,args...): if only lang, return anonymous function always calling h by prefixing arguments with lang
     //                      else, just call h with current arguments
     """ #%s(function(u){function f(l,k){
-          #function g(l,k){
+          #function g(k){
             #var r=f.messages[l][k];
-            #if (r===u&&l.indexOf('-')>-1) { r=f.messages[l.split('-')[0]][k];}
+            #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][k];}
             #if (r===u) {r=f.messages['default'][k];}
             #if (r===u) {r=f.messages['default.play'][k];}
             #return r;
           #}
-          #function h(l,k){
+          #function h(k){
             #var m;
             #if(typeof k==='object'){
-              #for(var i=0,le=k.length;i<le&&g(l,k[i])===u;++i);
-              #m=g(l,k[i])||k[0];
+              #for(var i=0,le=k.length;i<le&&g(k[i])===u;++i);
+              #m=g(k[i])||k[0];
             #}else{
-              #m=g(l,k);
+              #m=g(k);
               #m=((m!==u)?m:k);
             #}
-            #for(i=2,le=arguments.length;i<le;++i){
-              #m=m.replace('{'+(i-2)+'}',arguments[i])
+            #for(i=1,le=arguments.length;i<le;++i){
+              #m=m.replace('{'+(i-1)+'}',arguments[i])
             #}
             #return m;
           #}
           #if(k===undefined){
-            #return function() {Array.prototype.splice.call(arguments, 0, 0, l); return h.apply(u, arguments);};
+            #return h;
           #}else{
-            #return h.apply(u, arguments);
+            #return h.apply(u, Array.prototype.slice.call(arguments, 1));
           #}
         #}
         #f.messages={%s};
         #return f})()""".stripMargin('#').format(
         namespace.map{_ + "="}.getOrElse(""),
         messages)
+        //function() {Array.prototype.splice.call(arguments, 0, 0, l); return h.apply(u, arguments);};
   }
 
   /**
@@ -323,15 +359,22 @@ class JsMessages(implicit app: Application) {
       message <- values.get(key)
     } yield (key, message)).toMap
 
+  // Escape all values of the map, using escapeEcmaScript
+  // and replacing all doubled quotes by a single quote
   private def escapeMap(values: Map[String, String]): Map[String, String] = values.map {
     kv => escapeEcmaScript(kv._1) -> escapeEcmaScript(kv._2.replace("''", "'"))
   }
 
+  // Format a map to a nearly JSON string corresponding to a JavaScript object
+  // only missing are the brackets around
   private def formatMap(values: Map[String, String]): String =
     (for ((key, msg) <- values) yield {
       "'%s':'%s'".format(key, msg)
     }).mkString(",")
 
+  // Quite the same as 'formatMap' but for a Map[String, Map]
+  // resulting in a Object(String -> Object)
+  // still missing brackets at the beginning and at the end
   private def formatAllMap(values: Map[String, Map[String, String]]): String =
     (for ((lang, messages) <- values) yield {
       "'%s':{%s}".format(lang, formatMap(messages))
