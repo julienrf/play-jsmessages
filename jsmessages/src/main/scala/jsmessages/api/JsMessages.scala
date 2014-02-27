@@ -269,7 +269,6 @@ class JsMessages(implicit app: Application) {
         #return f})()""".stripMargin('#').format(
         namespace.map{_ + "="}.getOrElse(""),
         messages)
-        //function() {Array.prototype.splice.call(arguments, 0, 0, l); return h.apply(u, arguments);};
   }
 
   /**
