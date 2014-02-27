@@ -25,8 +25,7 @@ class JsMessages(implicit app: Application) {
    * The messages defined in the given Play application `app`, for all languages, as a map of (lang -> map(key -> message))
    * with addition of default messages and Play Framework messages
    */
-  val allMessages: Map[String, Map[String, String]] =
-    Messages.messages.mapValues(v => escapeMap(v)) ++ Map("default.play" -> defaultPlayMessages)
+  val allMessages: Map[String, Map[String, String]] = Messages.messages.mapValues(v => escapeMap(v))
 
   /**
    *  Nearly JSON formated string of allMessages.
@@ -242,8 +241,8 @@ class JsMessages(implicit app: Application) {
           #function g(k){
             #var r=f.messages[l][k];
             #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][k];}
-            #if (r===u) {r=f.messages['default'][k];}
-            #if (r===u) {r=f.messages['default.play'][k];}
+            #if (r===u) {r=f.messages['default'] && f.messages['default'][k];}
+            #if (r===u) {r=f.messages['default.play'] && f.messages['default.play'][k];}
             #return r;
           #}
           #function h(k){
