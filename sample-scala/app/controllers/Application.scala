@@ -24,4 +24,27 @@ object Application extends Controller {
     Ok(messages(Some("window.Messages"))).as(JAVASCRIPT)
   }
 
+  val all1 = Action {
+    Ok(views.html.all1())
+  }
+
+  val all2 = Action {
+    Ok(views.html.all2(messages))
+  }
+
+  val allJsMessages = Action {
+    Ok(messages.all(Some("window.Messages"))).as(JAVASCRIPT)
+  }
+
+  val en = Action {
+    Ok(views.html.en())
+  }
+
+  val enUS = Action {
+    Ok(views.html.enUS())
+  }
+
+  val fr = Action {
+    Ok(views.html.fr())
+  }
 }
