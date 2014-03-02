@@ -1,5 +1,3 @@
-@(messages: jsmessages.api.JsMessages)
-
 @main {
-  @messages.html(Some("window.Messages"))
+  <script src="@routes.Application.jsMessagesTmpl()"></script>
 }

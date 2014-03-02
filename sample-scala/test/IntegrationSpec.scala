@@ -87,8 +87,8 @@ class IntegrationSpec extends Specification {
 
         pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"en").get()).body must contain ("Hello {0}!")
         pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"fr").get()).body must contain ("Bonjour {0} !")
-        pawait(WS.url("http://localhost:3333/allMessages.js").get()).body must contain ("Hello {0}!")
-        pawait(WS.url("http://localhost:3333/allMessages.js").get()).body must contain ("Bonjour {0} !")
+        pawait(WS.url("http://localhost:3333/all-messages.js").get()).body must contain ("Hello {0}!")
+        pawait(WS.url("http://localhost:3333/all-messages.js").get()).body must contain ("Bonjour {0} !")
       }
     }
   }

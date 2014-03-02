@@ -1,5 +1,3 @@
-@(messages: jsmessages.api.JsMessages)(implicit lang: play.api.i18n.Lang)
-
 @allMain {
-  @messages.allHtml(Some("window.Messages"))
+  <script src="@routes.Application.allJsMessagesTmpl()"></script>
 }

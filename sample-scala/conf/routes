@@ -12,7 +12,9 @@ GET     /en                         controllers.Application.en
 GET     /enUS                       controllers.Application.enUS
 GET     /fr                         controllers.Application.fr
 GET     /messages.js                controllers.Application.jsMessages
-GET     /allMessages.js             controllers.Application.allJsMessages
+GET     /all-messages.js            controllers.Application.allJsMessages
+GET     /messages-tmpl.js           controllers.Application.jsMessagesTmpl
+GET     /all-messages-tmpl.js       controllers.Application.allJsMessagesTmpl
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

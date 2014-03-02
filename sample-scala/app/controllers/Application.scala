@@ -17,11 +17,11 @@ object Application extends Controller {
   }
 
   val index2 = Action { implicit request =>
-    Ok(views.html.index2(messages))
+    Ok(views.html.index2())
   }
 
   val jsMessages = Action { implicit request =>
-    Ok(messages(Some("window.Messages"))).as(JAVASCRIPT)
+    Ok(messages(Some("window.Messages")))
   }
 
   val all1 = Action {
@@ -29,11 +29,19 @@ object Application extends Controller {
   }
 
   val all2 = Action {
-    Ok(views.html.all2(messages))
+    Ok(views.html.all2())
   }
 
   val allJsMessages = Action {
-    Ok(messages.all(Some("window.Messages"))).as(JAVASCRIPT)
+    Ok(messages.all(Some("window.Messages")))
+  }
+
+  val allJsMessagesTmpl = Action {
+    Ok(views.js.all(messages))
+  }
+
+  val jsMessagesTmpl = Action { implicit request =>
+    Ok(views.js.messages(messages))
   }
 
   val en = Action {

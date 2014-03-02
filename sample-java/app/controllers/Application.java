@@ -14,7 +14,7 @@ public class Application extends Controller {
     }
 
     public static Result jsMessages() {
-        return ok(messages.generate("window.Messages")).as("application/javascript");
+        return ok(messages.generate("window.Messages"));
     }
 
 }

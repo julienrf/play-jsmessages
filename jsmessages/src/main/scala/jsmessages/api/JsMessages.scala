@@ -2,8 +2,8 @@ package jsmessages.api
 
 import play.api.i18n._
 import play.api.Application
-import play.api.templates.Html
 import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
+import play.api.templates.JavaScript
 
 /**
  * Can generate a JavaScript function computing localized messages of a Play application
@@ -99,7 +99,7 @@ class JsMessages(implicit app: Application) {
    * just generate a function. Otherwise it will generate a function and assign it to the given namespace. Note: you can
    * set something like `Some("var Messages")` to use a fresh variable.
    */
-  def apply(namespace: Option[String] = None)(implicit lang: Lang): String = apply(namespace, messagesString)
+  def apply(namespace: Option[String] = None)(implicit lang: Lang): JavaScript = apply(namespace, messagesString)
 
   /**
    * Generates a JavaScript function computing all messages.
@@ -130,7 +130,7 @@ class JsMessages(implicit app: Application) {
    * just generate a function. Otherwise it will generate a function and assign it to the given namespace. Note: you can
    * set something like `Some("var Messages")` to use a fresh variable.
    */
-  def all(namespace: Option[String] = None): String = all(namespace, allMessagesString)
+  def all(namespace: Option[String] = None): JavaScript = all(namespace, allMessagesString)
 
   /**
    * Generates a JavaScript function computing localized messages for a given keys subset.
@@ -144,8 +144,8 @@ class JsMessages(implicit app: Application) {
    *   )
    * }}}
    */
-  def subset(namespace: Option[String] = None)(keys: String*)(implicit lang: Lang): String =
-     apply(namespace, subsetMap(messages, keys: _*))
+  def subset(namespace: Option[String] = None)(keys: String*)(implicit lang: Lang): JavaScript =
+     apply(namespace, formatMap(subsetMap(messages, keys: _*)))
 
   /**
    * Generates a JavaScript function computing all messages for a given keys subset.
@@ -159,22 +159,12 @@ class JsMessages(implicit app: Application) {
    *   )
    * }}}
    */
-  def allSubset(namespace: Option[String] = None)(keys: String*): String =
-    all(namespace, allMessagesEscaped.mapValues(m => subsetMap(m, keys: _*)))
-
-  /**
-   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
-   *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
-   *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
-   * @param messages Map of (key -> message) to use
-   * @return A JavaScript fragment defining a function computing localized messages
-   */
-  def apply(namespace: Option[String], messages: Map[String, String]): String =
-    apply(namespace, formatMap(messages))
+  def allSubset(namespace: Option[String] = None)(keys: String*): JavaScript =
+    all(namespace, formatAllMap(allMessagesEscaped.mapValues(m => subsetMap(m, keys: _*))))
 
 
-  def apply(namespace: Option[String], messages: String): String = {
-    s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(k){
+  private def apply(namespace: Option[String], messages: String): JavaScript = {
+    JavaScript(s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(k){
           #var m;
           #if(typeof k==='object'){
             #for(var i=0,l=k.length;i<l&&f.messages[k[i]]===u;++i);
@@ -187,58 +177,23 @@ class JsMessages(implicit app: Application) {
           #}
           #return m};
           #f.messages={$messages};
-          #return f})()""".stripMargin('#')
+          #return f})()""".stripMargin('#'))
   }
 
   /**
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
    *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
    *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
-   * @param messages Map of (lang -> Map of (key -> message)) to use
-   * @return A JavaScript fragment defining a function computing all messages
-   *
-   * For example:
-   *
-   * {{{
-   *   @jsMessages.all(Some("window.MyMessages"), Messages.messages)
-   * }}}
-   *
-   * Then use it in your JavaScript code as follows:
-   *
-   * {{{
-   *   alert(MyMessages('en', 'greeting', 'World'));
-   * }}}
-   *
-   * Or keeping reference to a particular lang:
-   *
-   * {{{
-   *   var MyMessagesEn = MyMessages('en');
-   *   alert(MyMessagesEn('greeting', 'World'));
-   * }}}
-   *
-   * Provided you have the following message in your conf/messages file:
-   *
-   * {{{
-   * greeting=Hello {0}!
-   * }}}
-   */
-  def all(namespace: Option[String], messages: Map[String, Map[String, String]]): String =
-    all(namespace, formatAllMap(messages))
-
-  /**
-   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
-   *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
-   *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
-   * @param messages String correctly formated as JSON corresponding the to Map of messages.
+   * @param messages String correctly formatted as JSON corresponding the to Map of messages.
    * @return A JavaScript fragment defining a function computing all messages
    */
-  def all(namespace: Option[String], messages: String): String = {
+  private def all(namespace: Option[String], messages: String): JavaScript = {
     // g(key): given a lang, try to find a key among all possible messages,
     //              will try lang, lang.language, default and finally default.play
     // h(key,args...): return the formatted message retrieved from g(lang,key)
     // f(lang,key,args...): if only lang, return anonymous function always calling h by prefixing arguments with lang
     //                      else, just call h with current arguments
-    s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(l,k){
+    JavaScript(s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(l,k){
           #function g(k){
             #var r=f.messages[l][k];
             #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][k];}
@@ -267,88 +222,8 @@ class JsMessages(implicit app: Application) {
           #}
         #}
         #f.messages={$messages};
-        #return f})()""".stripMargin('#')
+        #return f})()""".stripMargin('#'))
   }
-
-  /**
-   * Generates a JavaScript function computing localized messages.
-   *
-   * For example:
-   *
-   * {{{
-   *   @jsMessages.html(Some("window.MyMessages"))
-   * }}}
-   *
-   * Then use it in your JavaScript code as follows:
-   *
-   * {{{
-   *   alert(MyMessages('greeting', 'World'));
-   * }}}
-   *
-   * Provided you have the following message in your conf/messages file:
-   *
-   * {{{
-   * greeting=Hello {0}!
-   * }}}
-   */
-  def html(namespace: Option[String] = None)(implicit lang: Lang) =
-    script(apply(namespace))
-
-  /**
-   * Generates a JavaScript function computing all messages.
-   *
-   * For example:
-   *
-   * {{{
-   *   @jsMessages.allHtml(Some("window.MyMessages"))
-   * }}}
-   *
-   * Then use it in your JavaScript code as follows:
-   *
-   * {{{
-   *   alert(MyMessages('en', 'greeting', 'World'));
-   * }}}
-   *
-   * Provided you have the following message in your conf/messages file:
-   *
-   * {{{
-   * greeting=Hello {0}!
-   * }}}
-   */
-  def allHtml(namespace: Option[String] = None) =
-    script(all(namespace))
-
-  /**
-   * Generates a JavaScript function computing localized messages for a given keys subset.
-   *
-   * Example:
-   *
-   * {{{
-   *    @jsMessages.subsetHtml(Some("window.MyMessages"))(
-   *      "error.required",
-   *      "error.number"
-   *    )
-   * }}}
-   */
-  def subsetHtml(namespace: Option[String] = None)(keys: String*)(implicit lang: Lang) =
-    script(subset(namespace)(keys: _*))
-
-  /**
-   * Generates a JavaScript function computing all messages for a given keys subset.
-   *
-   * Example:
-   *
-   * {{{
-   *    @jsMessages.allSubsetHtml(Some("window.MyMessages"))(
-   *      "error.required",
-   *      "error.number"
-   *    )
-   * }}}
-   */
-  def allSubsetHtml(namespace: Option[String] = None)(keys: String*) =
-    script(allSubset(namespace)(keys: _*))
-
-  private def script(js: String) = Html(s"""<script type="text/javascript">$js</script>""")
 
   private def subsetMap(values: Map[String, String], keys: String*): Map[String, String] =
     (for {
