@@ -12,59 +12,63 @@ import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
 class JsMessages(implicit app: Application) {
 
   /**
-   * The application’s messages to use by default, as a map of (key -> message)
+   * All the messages of the application, as a map of (lang -> map(key -> message)).
+   *
+   * The default implementation returns the Play! application messages. Override this lazy val to supply additional messages.
    */
-  val defaultMessages: Map[String, String] = escapeMap(Messages.messages.get("default").getOrElse(Map.empty))
-
+  lazy val allMessages: Map[String, Map[String, String]] = Messages.messages
+  
   /**
-   * Messages used by Play Framework
+   * The application’s messages to use by default, as a map of (key -> message).
+   * Data is already ECMAScript-escaped.
    */
-  val defaultPlayMessages: Map[String, String] =  escapeMap(Messages.messages.get("default.play").getOrElse(Map.empty))
+  private val defaultMessagesEscaped: Map[String, String] =
+    escapeMap(Messages.messages.get("default.play").getOrElse(Map.empty)) ++
+    escapeMap(Messages.messages.get("default").getOrElse(Map.empty))
 
   /**
    * The messages defined in the given Play application `app`, for all languages, as a map of (lang -> map(key -> message))
-   * with addition of default messages and Play Framework messages
+   * with addition of default messages and Play Framework messages.
    */
-  val allMessages: Map[String, Map[String, String]] = Messages.messages.mapValues(v => escapeMap(v))
+  lazy val allMessagesEscaped: Map[String, Map[String, String]] = Messages.messages.mapValues(escapeMap)
 
   /**
    *  Nearly JSON formated string of allMessages.
    */
-  val allMessagesString: String = formatAllMap(allMessages)
+  private val allMessagesString: String = formatAllMap(allMessagesEscaped)
 
   /**
    * Cache to memorize computed messages for each available lang
    * Computation consists of merging default messages, default Play messages,
    * messages for the language of the lang and messages of the lang itself.
    */
-  val messagesCache: Map[String, Map[String, String]] = allMessages.map { kv =>
-    val language = if (kv._1.contains("-")) { Some(kv._1.split("-")(0)) } else { None }
+  private val messagesCache: Map[String, Map[String, String]] = for ((lang, msgs) <- allMessagesEscaped) yield {
+    val maybeCountry = if (lang.contains("-")) Some(lang.split("-")(0)) else None
 
-    kv._1 -> (
-      defaultPlayMessages ++
-      defaultMessages ++
-      language.flatMap(lang => allMessages.get(lang)).getOrElse(Map.empty) ++
-      kv._2
+    lang -> (
+      defaultMessagesEscaped ++
+      maybeCountry.flatMap(country => allMessagesEscaped.get(country)).getOrElse(Map.empty) ++
+      msgs
     )
   }
 
   /**
-   *  Cache to memorize the nearly JSON formated string of each lang messages.
+   *  Cache to memorize the nearly JSON formatted string of each lang messages.
    */
-  val messagesStringCache: Map[String, String] = messagesCache.mapValues(v => formatMap(v))
+  private val messagesStringCache: Map[String, String] = messagesCache.mapValues(formatMap)
 
   /**
    * @param lang Language to retrieve messages for
-   * @return The messages defined in the given Play application `app`, for the given language `lang`, as a map of (key -> message)
+   * @return The messages defined in the given Play application `app`, for the given language `lang`, as a map of (key -> message).
    */
-  def messages(implicit lang: Lang): Map[String, String] = messagesCache.get(lang.code).getOrElse(Map.empty)
+  private def messages(implicit lang: Lang): Map[String, String] = messagesCache.get(lang.code).getOrElse(Map.empty)
 
   /**
    * @param lang Language to retrieve messages for
    * @return The nearly JSON formated string of messages defined in the given Play application `app`,
-   * for the given language `lang`, as a map of (key -> message)
+   * for the given language `lang`, as a map of (key -> message).
    */
-  def messagesString(implicit lang: Lang): String = messagesStringCache.get(lang.code).getOrElse("")
+  private def messagesString(implicit lang: Lang): String = messagesStringCache.get(lang.code).getOrElse("")
 
   /**
    * Generates a JavaScript function computing localized messages.
@@ -156,7 +160,7 @@ class JsMessages(implicit app: Application) {
    * }}}
    */
   def allSubset(namespace: Option[String] = None)(keys: String*): String =
-    all(namespace, allMessages.mapValues(m => subsetMap(m, keys: _*)))
+    all(namespace, allMessagesEscaped.mapValues(m => subsetMap(m, keys: _*)))
 
   /**
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
@@ -170,7 +174,7 @@ class JsMessages(implicit app: Application) {
 
 
   def apply(namespace: Option[String], messages: String): String = {
-    """ #%s(function(u){function f(k){
+    s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(k){
           #var m;
           #if(typeof k==='object'){
             #for(var i=0,l=k.length;i<l&&f.messages[k[i]]===u;++i);
@@ -182,11 +186,8 @@ class JsMessages(implicit app: Application) {
             #m=m.replace('{'+(i-1)+'}',arguments[i])
           #}
           #return m};
-          #f.messages={%s};
-          #return f})()""".stripMargin('#').format(
-           namespace.map{_ + "="}.getOrElse(""),
-           messages
-    )
+          #f.messages={$messages};
+          #return f})()""".stripMargin('#')
   }
 
   /**
@@ -237,7 +238,7 @@ class JsMessages(implicit app: Application) {
     // h(key,args...): return the formatted message retrieved from g(lang,key)
     // f(lang,key,args...): if only lang, return anonymous function always calling h by prefixing arguments with lang
     //                      else, just call h with current arguments
-    """ #%s(function(u){function f(l,k){
+    s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(l,k){
           #function g(k){
             #var r=f.messages[l][k];
             #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][k];}
@@ -265,10 +266,8 @@ class JsMessages(implicit app: Application) {
             #return h.apply(u, Array.prototype.slice.call(arguments, 1));
           #}
         #}
-        #f.messages={%s};
-        #return f})()""".stripMargin('#').format(
-        namespace.map{_ + "="}.getOrElse(""),
-        messages)
+        #f.messages={$messages};
+        #return f})()""".stripMargin('#')
   }
 
   /**
@@ -359,12 +358,12 @@ class JsMessages(implicit app: Application) {
 
   // Escape all values of the map, using escapeEcmaScript
   // and replacing all doubled quotes by a single quote
-  private def escapeMap(values: Map[String, String]): Map[String, String] = values.map {
-    kv => escapeEcmaScript(kv._1) -> escapeEcmaScript(kv._2.replace("''", "'"))
-  }
+  private def escapeMap(values: Map[String, String]): Map[String, String] =
+    for ((key, value) <- values) yield escapeEcmaScript(key) -> escapeEcmaScript(value.replace("''", "'"))
 
   // Format a map to a nearly JSON string corresponding to a JavaScript object
   // only missing are the brackets around
+  // Assumes that data is already ECMAScript-escaped.
   private def formatMap(values: Map[String, String]): String =
     (for ((key, msg) <- values) yield {
       "'%s':'%s'".format(key, msg)
@@ -373,6 +372,7 @@ class JsMessages(implicit app: Application) {
   // Quite the same as 'formatMap' but for a Map[String, Map]
   // resulting in a Object(String -> Object)
   // still missing brackets at the beginning and at the end
+  // Assumes that data is already ECMAScript-escaped.
   private def formatAllMap(values: Map[String, Map[String, String]]): String =
     (for ((lang, messages) <- values) yield {
       "'%s':{%s}".format(lang, formatMap(messages))
