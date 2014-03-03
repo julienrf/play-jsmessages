@@ -14,6 +14,14 @@ Add a dependency on the following artifact:
 libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.0-SNAPSHOT"
 ```
 
+The current 1.6.0 version is compatible with Play! 2.2.
+
+Previous versions are available here:
+ * [`1.5.2`](https://github.com/julienrf/play-jsmessages/tree/1.5.2) for play-2.2 ;
+ * [`1.5.0`](https://github.com/julienrf/play-jsmessages/tree/1.5.0) for play-2.1 ;
+ * [`1.3`](https://github.com/julienrf/play-jsmessages/tree/403dc8d7248c965c827b70edeff55016ae274bef) for play-2.0 ;
+ * [`1.2.1`](https://github.com/julienrf/play-jsmessages/tree/cc52b23dae9997b77da3cbccf6d22b60a557c2ee) for play-2.0.
+
 ## API Documentation
 
 You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.0-SNAPSHOT/api/), which contains the documentation of both the Scala and Java APIs.
