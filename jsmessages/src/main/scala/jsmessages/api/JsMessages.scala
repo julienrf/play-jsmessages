@@ -1,6 +1,6 @@
 package jsmessages.api
 
-import play.api.i18n._
+import play.api.i18n.Lang
 import play.api.Application
 import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
 import play.api.templates.JavaScript
@@ -16,21 +16,13 @@ class JsMessages(implicit app: Application) {
    *
    * The default implementation returns the Play! application messages. Override this lazy val to supply additional messages.
    */
-  lazy val allMessages: Map[String, Map[String, String]] = Messages.messages
+  lazy val allMessages: Map[String, Map[String, String]] = play.api.i18n.Messages.messages
   
-  /**
-   * The application’s messages to use by default, as a map of (key -> message).
-   * Data is already ECMAScript-escaped.
-   */
-  private val defaultMessagesEscaped: Map[String, String] =
-    escapeMap(Messages.messages.get("default.play").getOrElse(Map.empty)) ++
-    escapeMap(Messages.messages.get("default").getOrElse(Map.empty))
-
   /**
    * The messages defined in the given Play application `app`, for all languages, as a map of (lang -> map(key -> message))
    * with addition of default messages and Play Framework messages.
    */
-  lazy val allMessagesEscaped: Map[String, Map[String, String]] = Messages.messages.mapValues(escapeMap)
+  private val allMessagesEscaped: Map[String, Map[String, String]] = allMessages.mapValues(escapeMap)
 
   /**
    *  Nearly JSON formated string of allMessages.
@@ -46,7 +38,8 @@ class JsMessages(implicit app: Application) {
     val maybeCountry = if (lang.contains("-")) Some(lang.split("-")(0)) else None
 
     lang -> (
-      defaultMessagesEscaped ++
+      allMessagesEscaped.get("default.play").getOrElse(Map.empty) ++
+      allMessagesEscaped.get("default").getOrElse(Map.empty) ++
       maybeCountry.flatMap(country => allMessagesEscaped.get(country)).getOrElse(Map.empty) ++
       msgs
     )
