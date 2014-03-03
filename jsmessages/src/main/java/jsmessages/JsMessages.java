@@ -7,12 +7,15 @@ import play.libs.Scala;
 import play.mvc.Http;
 
 /**
- * Can generate a JavaScript function computing localized messages of a Play application
+ * Generate a JavaScript function computing localized messages of a Play! application (Java API).
  */
 public class JsMessages {
 
     final jsmessages.api.JsMessages api;
 
+    /**
+     * @param app Play! application to get messages from
+     */
     public JsMessages(Application app) {
         this.api = new jsmessages.api.JsMessages(app.getWrappedApplication());
     }
@@ -75,8 +78,8 @@ public class JsMessages {
      * @param keys Keys to use
      * @return The function definition
      */
-    public JavaScript allSubset(String namespace, String... keys) {
-        return api.allSubset(scala.Option.apply(namespace), Scala.toSeq(keys));
+    public JavaScript subsetAll(String namespace, String... keys) {
+        return api.subsetAll(scala.Option.apply(namespace), Scala.toSeq(keys));
     }
 
 }

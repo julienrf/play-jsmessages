@@ -1,16 +1,12 @@
 # Play JsMessages library [![Build Status](https://travis-ci.org/julienrf/play-jsmessages.png?branch=master)](https://travis-ci.org/julienrf/play-jsmessages)
 
-This library allows to compute localized messages on client-side, in Play 2 projects.
+This library allows you to compute localized messages on client-side, in Play! projects.
+
+Basically, play-jsmessages takes the i18n messages of your Play! application, sends them to the client-side as a JSON object and defines a JavaScript function returning a message value from a given language and the message key and arguments.
 
 Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to see it in action.
 
 ## Installation (using sbt)
-
-You will need to add the following resolver:
-
-```scala
-resolvers += "julienrf.github.com" at "http://julienrf.github.com/repo/"
-```
 
 Add a dependency on the following artifact:
 
@@ -18,98 +14,56 @@ Add a dependency on the following artifact:
 libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.0-SNAPSHOT"
 ```
 
-## Usage (Scala)
+## API Documentation
 
-Create an instance of the `jsmessages.api.JsMessages` class to export your application localized messages on client-side:
+You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.0-SNAPSHOT/api/), which contains the documentation of both the Scala and Java APIs.
 
-```scala
-  val jsMessages = {
-    import play.api.Play.current
+## Quick start
 
-    val messages = new jsmessages.api.JsMessages
+### Create a `JsMessage` instance
 
-    Action { implicit request =>
-      Ok(messages(Some("window.Messages")))
-    }
-  }
-```
-
-The above code creates a Play action that returns a JavaScript fragment defining a function `window.Messages` that computes
-the localized messages of the current application.
-
-The `JsMessages#apply` method takes an optional namespace as parameter (`Some("window.Messages")` in the example above).
-You can use any valid JavaScript namespace, the generated function will then be assigned to this namespace. Use `None`
-if you only want to generate the function, without assigning it to a namespace.
-
-The `JsMessages#apply` method also takes an implicit `play.api.i18n.Lang` parameter used to keep only the messages
-of the corresponding language. Alternatively, you can use the `JsMessagse#all` method to return the messages of all
-the languages of the application.
-
-Last but not least, you can export only a subset of your i18n keys:
+On server-side, create an instance of the `jsmessages.api.JsMessages` class (or `jsmessages.JsMessages` for Java users):
 
 ```scala
-  messages.subset(Some("window.Messages"))(
-    "error.required",
-    "error.number"
-  )
+import jsmessages.api.JsMessages
+import play.api.Play.current
+
+val jsMessages = new JsMessages
 ```
 
-See below for usage instructions in JavaScript.
+### Generate a JavaScript asset for the client’s language
 
-## Usage (Java)
+Then you typically want to define an action returning a JavaScript resource containing all the machinery to compute localized messages from client-side:
 
-Create an instance of the `jsmessages.JsMessages` class to export your application localized messages on client-side:
+```scala
+Action { implicit request =>
+  Ok(jsMessages(Some("window.Messages")))
+}
+```
+
+Or in Java:
 
 ```java
-    import jsmessages.JsMessages;
-    ...
-    final static JsMessages messages = new JsMessages(play.Play.application());
+final static jsmessages.JsMessages jsMessages = new jsmessages.JsMessages(play.Play.application());
 
-    public static Result jsMessages() {
-        return ok(messages.generate("window.Messages"));
-    }
+public static Result jsMessages() {
+    return ok(jsMessages.generate("window.Messages"));
+}
 ```
 
-The above code creates a Play action that returns a JavaScript resource defining a function `window.Messages` that computes
-the localized messages of the current application.
-
-The `JsMessages#generate` method takes an optional namespace as parameter (`"window.Messages"` in the example above).
-You can use any valid JavaScript namespace, the generated function will then be assigned to this namespace. Use `null`
-if you only want to generate the function, without assigning it to a namespace.
-
-The `JsMessages#generate` method uses the language found in the current HTTP context to keep only the messages of the
-corresponding language. Alternatively, you can use the `JsMessages#generateAll` method to return the messages of all
-the languages of the application.
-
-Finally, you can export only a subset of your i18n keys:
-
-```java
-    public static Result jsMessages() {
-        return ok(messages.subset("window.Messages",
-            "error.required",
-            "error.number"
-        )).as("application/javascript");
-    }
-```
-
-## Usage (JavaScript)
-
-### Only one language
-
-After having generated a JavaScript function as explained above, you can compute messages on client-side:
+The above code creates a Play! action that returns a JavaScript fragment containing the localized messages of the application for the client language and defining a global function `window.Messages`. This function returns a localized message given its key and its arguments:
 
 ```javascript
-  alert(Messages('greeting', 'World'));
+console.log(Messages('greeting', 'Julien')); // will print e.g. "Hello, Julien!" or "Bonjour Julien!"
 ```
 
-You can also provide alternative keys that will be used if the main key is not defined. Keys will be tried in order until
-a defined key is found.
+The JavaScript function can also be supplied alternative keys that will be used if the main key is not defined. Keys will be tried in order until a defined key is found:
 
 ```javascript
-  alert(Messages(['greeting', 'opening'], 'World'));
+  alert(Messages(['greeting', 'saluting'], 'Julien'));
 ```
 
-The generated function stores the messages map in a `messages` property that is publicly accessible so you can update the messages without reloading the page:
+The JavaScript function stores the messages map in a `messages` property that is publicly accessible so you can update the messages without reloading the page:
 
 ```javascript
 // Update a single message
@@ -120,11 +74,38 @@ Messages.messages = {
 }
 ```
 
-### All the languages
+### Generate a JavaScript asset for all the languages
 
-In case you used a method using the messages of all the languages of the application (one ending with `all`), the first
-parameter of the generated JavaScript function is the language to use, remaining parameters have the same meaning
-as in the previous section.
+Alternatively, use the `all` method (`generateAll` in Java) to generate a JavaScript fragment containing all the messages of the application instead of just those of the client’s current language, making it possible to switch the language from client-side without reloading the page. In this case, the generated JavaScript function takes an additional parameter corresponding to the language to use:
+
+```javascript
+console.log(Messages('en', 'greeting', 'Julien')); // "Hello, Julien!"
+console.log(Messages('fr', 'greeting', 'Julien')); // "Bonjour Julien!"
+```
+
+In that case the `messages` property of the JavaScript function is a map of languages indexing maps of messages.
+
+The JavaScript function can also be partially applied to fix its first parameter:
+
+```javascript
+val messagesFr = Messages('fr'); // Use only the 'fr' messages
+console.log(messagesFr('greeting', 'Julien')); // "Bonjour Julien!"
+```
+
+### Generate a JavaScript asset with a subset of your messages
+
+Last but not least, the `subset` method allows you to export only a subset of your messages in the client’s language:
+
+```scala
+Action { implicit request =>
+  Ok(messages.subset(Some("window.Messages"))(
+    "error.required",
+    "error.number"
+  ))
+}
+```
+
+Similarly, the `subsetAll` method exports a subset of your messages in all languages.
 
 ## Changelog
 

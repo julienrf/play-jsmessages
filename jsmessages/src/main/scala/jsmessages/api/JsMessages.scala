@@ -1,35 +1,53 @@
 package jsmessages.api
 
-import play.api.i18n.Lang
 import play.api.Application
-import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
+import play.api.i18n.Lang
 import play.api.templates.JavaScript
+import org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript
 
 /**
- * Can generate a JavaScript function computing localized messages of a Play application
- * @param app Play application to use
+ * Generate a JavaScript function computing localized messages of a Play! application.
+ *
+ * Typical usage:
+ *
+ * {{{
+ *   import play.api.mvc._
+ *   import play.api.Play.current
+ *   import jsmessages.api.JsMessages
+ *
+ *   object Application extends Controller {
+ *     val jsMessages = new JsMessages
+ *
+ *     val messages = Action { implicit request =>
+ *       Ok(jsMessages(Some("window.Messages")))
+ *     }
+ *   }
+ * }}}
+ *
+ * Then on client-side:
+ *
+ * {{{
+ *   console.log(Messages("greeting", "Julien")); // prints "Hello, Julien!"
+ * }}}
+ *
+ * @param app Play! application to get messages from
  */
 class JsMessages(implicit app: Application) {
 
   /**
    * All the messages of the application, as a map of (lang -> map(key -> message)).
    *
-   * The default implementation returns the Play! application messages. Override this lazy val to supply additional messages.
+   * The default implementation returns the Play! application messages. Override this lazy val to supply
+   * additional messages. As it is the case in Play!, JsMessages assumes that “default” messages are
+   * indexed by the `"default"` and `"default.play"` language codes.
    */
   lazy val allMessages: Map[String, Map[String, String]] = play.api.i18n.Messages.messages
   
-  /**
-   * The messages defined in the given Play application `app`, for all languages, as a map of (lang -> map(key -> message))
-   * with addition of default messages and Play Framework messages.
-   */
   private val allMessagesEscaped: Map[String, Map[String, String]] = allMessages.mapValues(escapeMap)
 
-  /**
-   *  Nearly JSON formated string of allMessages.
-   */
   private val allMessagesString: String = formatAllMap(allMessagesEscaped)
 
-  /**
+  /*
    * Cache to memorize computed messages for each available lang
    * Computation consists of merging default messages, default Play messages,
    * messages for the language of the lang and messages of the lang itself.
@@ -45,18 +63,16 @@ class JsMessages(implicit app: Application) {
     )
   }
 
-  /**
-   *  Cache to memorize the nearly JSON formatted string of each lang messages.
-   */
   private val messagesStringCache: Map[String, String] = messagesCache.mapValues(formatMap)
 
-  /**
+  /*
    * @param lang Language to retrieve messages for
-   * @return The messages defined in the given Play application `app`, for the given language `lang`, as a map of (key -> message).
+   * @return The messages defined in the given Play application `app`, for the given language `lang`, as a map
+   *         of (key -> message).
    */
   private def messages(implicit lang: Lang): Map[String, String] = messagesCache.get(lang.code).getOrElse(Map.empty)
 
-  /**
+  /*
    * @param lang Language to retrieve messages for
    * @return The nearly JSON formated string of messages defined in the given Play application `app`,
    * for the given language `lang`, as a map of (key -> message).
@@ -64,95 +80,112 @@ class JsMessages(implicit app: Application) {
   private def messagesString(implicit lang: Lang): String = messagesStringCache.get(lang.code).getOrElse("")
 
   /**
-   * Generates a JavaScript function computing localized messages.
+   * Generates a JavaScript function computing localized messages in the given implicit `Lang`.
    *
    * For example:
    *
    * {{{
-   *   def jsMessages = Action { implicit request =>
-   *     Ok(jsMessages(Some("window.MyMessages"))).as(JAVASCRIPT)
+   *   val messages = Action { implicit request =>
+   *     Ok(jsMessages(Some("window.Messages")))
    *   }
    * }}}
    *
    * Then use it in your JavaScript code as follows:
    *
    * {{{
-   *   alert(MyMessages('greeting', 'World'));
+   *   alert(Messages('greeting', 'World'));
    * }}}
    *
-   * Provided you have the following message in your conf/messages file:
+   * Provided you have the following message in your `conf/messages` file:
    *
    * {{{
    * greeting=Hello {0}!
    * }}}
    *
-   * Note: This implementation does not handle quotes escaping in patterns (see http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
+   * Note: This implementation does not handle quotes escaping in patterns (see
+   * http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
    *
-   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set this function will
-   * just generate a function. Otherwise it will generate a function and assign it to the given namespace. Note: you can
-   * set something like `Some("var Messages")` to use a fresh variable.
+   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this
+   *                  function will just generate a function. Otherwise it will generate a function and assign
+   *                  it to the given namespace. Note: you can set something like `Some("var Messages")` to use
+   *                  a fresh variable.
+   * @param lang Language to use. The message corresponding to a given key is found by searching in the
+   *         following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
+   *         country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
+   *         Play! default messages.
    */
   def apply(namespace: Option[String] = None)(implicit lang: Lang): JavaScript = apply(namespace, messagesString)
 
   /**
-   * Generates a JavaScript function computing all messages.
+   * Generates a JavaScript function computing localized messages in all the languages of the application.
    *
    * For example:
    *
    * {{{
-   *   def jsMessages = Action { implicit request =>
-   *     Ok(jsMessages.all(Some("window.MyMessages"))).as(JAVASCRIPT)
+   *   val messages = Action {
+   *     Ok(jsMessages.all(Some("window.Messages")))
    *   }
    * }}}
    *
    * Then use it in your JavaScript code as follows:
    *
    * {{{
-   *   alert(MyMessages('en', 'greeting', 'World'));
+   *   alert(Messages('en', 'greeting', 'World'));
    * }}}
    *
-   * Provided you have the following message in your conf/messages file:
+   * Provided you have the following message in your `conf/messages` file:
    *
    * {{{
    * greeting=Hello {0}!
    * }}}
    *
-   * Note: This implementation does not handle quotes escaping in patterns (see http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
+   * Note that, given a message key, the JavaScript function will search the corresponding message in the
+   * following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
+   * country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
+   * Play! default messages.
    *
-   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set this function will
-   * just generate a function. Otherwise it will generate a function and assign it to the given namespace. Note: you can
-   * set something like `Some("var Messages")` to use a fresh variable.
+   * Note: This implementation does not handle quotes escaping in patterns (see
+   * http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
+   *
+   * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this
+   *                  function will just generate a function. Otherwise it will generate a function and
+   *                  assign it to the given namespace. Note: you can set something like
+   *                  `Some("var Messages")` to use a fresh variable.
    */
   def all(namespace: Option[String] = None): JavaScript = all(namespace, allMessagesString)
 
   /**
-   * Generates a JavaScript function computing localized messages for a given keys subset.
+   * Generates a JavaScript function computing localized messages for a given keys subset and language.
    *
    * Example:
    *
    * {{{
-   *   jsMessages.subset(Some("window.MyMessages"))(
+   *   jsMessages.subset(Some("window.Messages"))(
    *     "error.required",
    *     "error.number"
    *   )
    * }}}
+   *
+   * See documentation of the `apply` method for client-side instructions.
    */
   def subset(namespace: Option[String] = None)(keys: String*)(implicit lang: Lang): JavaScript =
      apply(namespace, formatMap(subsetMap(messages, keys: _*)))
 
   /**
-   * Generates a JavaScript function computing all messages for a given keys subset.
+   * Generates a JavaScript function computing all messages for a given keys subset, for all languages.
    *
    * Example:
    *
    * {{{
-   *   jsMessages.allSubset(Some("window.MyMessages"))(
+   *   jsMessages.subsetAll(Some("window.MyMessages"))(
    *     "error.required",
    *     "error.number"
    *   )
    * }}}
+   *
+   * See documentation of the `all` method for client-side instructions.
    */
-  def allSubset(namespace: Option[String] = None)(keys: String*): JavaScript =
+  def subsetAll(namespace: Option[String] = None)(keys: String*): JavaScript =
     all(namespace, formatAllMap(allMessagesEscaped.mapValues(m => subsetMap(m, keys: _*))))
 
 
@@ -173,7 +206,7 @@ class JsMessages(implicit app: Application) {
           #return f})()""".stripMargin('#'))
   }
 
-  /**
+  /*
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this function will
    *                  just return a literal function. Otherwise it will generate a function and assign it to the given namespace.
    *                  Note: you can set something like `Some("var Messages")` to use a fresh variable.
