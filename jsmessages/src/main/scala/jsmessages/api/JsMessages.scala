@@ -189,6 +189,34 @@ class JsMessages(implicit app: Application) {
     all(namespace, formatAllMap(allMessagesEscaped.mapValues(m => subsetMap(m, keys: _*))))
 
 
+  /**
+   * Generates a JavaScript function computing localized messages filtering keys based on a predicated.
+   *
+   * Example:
+   *
+   * {{{
+   *   jsMessages.filter(Some("window.Messages"))(_.startsWith("error.")
+   * }}}
+   *
+   * See documentation of the `apply` method for client-side instructions.
+   */
+  def filter(namespace: Option[String] = None)(filter: String => Boolean)(implicit lang: Lang): JavaScript =
+    apply(namespace, formatMap(messages.filterKeys(filter)))
+
+  /**
+   * Generates a JavaScript function computing all messages filtering keys based on a predicated.
+   *
+   * Example:
+   *
+   * {{{
+   *   jsMessages.filterAll(Some("window.Messages"))(_.startsWith("error.")
+   * }}}
+   *
+   * See documentation of the `all` method for client-side instructions.
+   */
+  def filterAll(namespace: Option[String] = None)(filter: String => Boolean): JavaScript =
+    all(namespace, formatAllMap(allMessagesEscaped.mapValues(_.filterKeys(filter))))
+
   private def apply(namespace: Option[String], messages: String): JavaScript = {
     JavaScript(s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(k){
           #var m;

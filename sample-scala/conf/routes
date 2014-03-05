@@ -16,5 +16,17 @@ GET     /all-messages.js            controllers.Application.allJsMessages
 GET     /messages-tmpl.js           controllers.Application.jsMessagesTmpl
 GET     /all-messages-tmpl.js       controllers.Application.allJsMessagesTmpl
 
+# Subset
+GET     /subset                     controllers.Application.subset
+GET     /subsetAll                  controllers.Application.subsetAll
+GET     /subset-messages.js         controllers.Application.subsetMessages
+GET     /subsetAll-messages.js      controllers.Application.subsetAllMessages
+
+# Filter
+GET     /filter                     controllers.Application.filter
+GET     /filterAll                  controllers.Application.filterAll
+GET     /filter-messages.js         controllers.Application.filterMessages
+GET     /filterAll-messages.js      controllers.Application.filterAllMessages
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
