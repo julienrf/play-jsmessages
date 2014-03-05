@@ -11,7 +11,7 @@ Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to se
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.0-SNAPSHOT"
+libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.0"
 ```
 
 The current 1.6.0 version is compatible with Play! 2.2.

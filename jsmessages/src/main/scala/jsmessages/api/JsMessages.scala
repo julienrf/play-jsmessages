@@ -206,7 +206,7 @@ class JsMessages(implicit app: Application) {
    * Example:
    *
    * {{{
-   *   jsMessages.filter(_.startsWith("error.")(Some("window.Messages"))
+   *   jsMessages.filter(_.startsWith("error."))(Some("window.Messages"))
    * }}}
    *
    * See documentation of the `apply` method for client-side instructions.
@@ -225,7 +225,7 @@ class JsMessages(implicit app: Application) {
    * Example:
    *
    * {{{
-   *   jsMessages.filterAll(_.startsWith("error.")(Some("window.Messages"))
+   *   jsMessages.filterAll(_.startsWith("error."))(Some("window.Messages"))
    * }}}
    *
    * See documentation of the `all` method for client-side instructions.
