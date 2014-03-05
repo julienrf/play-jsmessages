@@ -28,7 +28,7 @@ You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1
 
 ## Quick start
 
-### Create a `JsMessage` instance
+### Create a `JsMessages` instance
 
 On server-side, create an instance of the `jsmessages.api.JsMessages` class (or `jsmessages.JsMessages` for Java users):
 
