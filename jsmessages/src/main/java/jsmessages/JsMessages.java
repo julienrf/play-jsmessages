@@ -4,6 +4,7 @@ import play.Application;
 import play.api.templates.JavaScript;
 import play.i18n.Lang;
 import play.libs.Scala;
+import play.libs.F.Function;
 import play.mvc.Http;
 
 /**
@@ -82,4 +83,44 @@ public class JsMessages {
         return api.subsetAll(scala.Option.apply(namespace), Scala.toSeq(keys));
     }
 
+    /**
+     * Generates a JavaScript function computing localized messages filtering i18n keys based on a predicate.
+     * @param namespace Namespace to which assign the generated function
+     * @param filter the predicate to use
+     * @return The function definition
+     */
+    public JavaScript filter(String namespace, Function<String, Object> filter) {
+        return filter(namespace, Http.Context.current().lang(), filter);
+    }
+
+    /**
+     * Generates a JavaScript function computing localized messages filtering i18n keys based on a predicate.
+     * @param namespace Namespace to which assign the generated function
+     * @param lang Lang to use
+     * @param filter the predicate to use
+     * @return The function definition
+     */
+    public JavaScript filter(String namespace, Lang lang, final Function<String, Object> filter) {
+        return api.filter(scala.Option.apply(namespace), new scala.runtime.AbstractFunction1<String, Object>() {
+          public Object apply(String key) {
+            try { return filter.apply(key); }
+            catch (Throwable t) { return false; }
+          }
+        }, lang);
+    }
+
+    /**
+     * Generates a JavaScript function computing all messages filtering i18n keys based on a predicate.
+     * @param namespace Namespace to which assign the generated function
+     * @param filter the predicate to use
+     * @return The function definition
+     */
+    public JavaScript filterAll(String namespace, final Function<String, Object> filter) {
+        return api.filterAll(scala.Option.apply(namespace), new scala.runtime.AbstractFunction1<String, Object>() {
+          public Object apply(String key) {
+            try { return filter.apply(key); }
+            catch (Throwable t) { return false; }
+          }
+        });
+    }
 }
