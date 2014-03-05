@@ -55,4 +55,36 @@ object Application extends Controller {
   val fr = Action {
     Ok(views.html.fr())
   }
+
+  val subset = Action {
+    Ok(views.html.subset.subset())
+  }
+
+  val subsetAll = Action {
+    Ok(views.html.subset.subsetAll())
+  }
+
+  val filter = Action {
+    Ok(views.html.filter.filter())
+  }
+
+  val filterAll = Action {
+    Ok(views.html.filter.filterAll())
+  }
+
+  val subsetMessages = Action {
+    Ok(messages.subset(Some("window.Messages"))("greeting", "apostrophe"))
+  }
+
+  val subsetAllMessages = Action {
+    Ok(messages.subsetAll(Some("window.Messages"))("greeting", "apostrophe"))
+  }
+
+  val filterMessages = Action {
+    Ok(messages.filter(Some("window.Messages"))(_.startsWith("error.")))
+  }
+
+  val filterAllMessages = Action {
+    Ok(messages.filterAll(Some("window.Messages"))(_.startsWith("error.")))
+  }
 }
