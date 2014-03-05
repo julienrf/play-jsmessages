@@ -73,18 +73,18 @@ object Application extends Controller {
   }
 
   val subsetMessages = Action {
-    Ok(messages.subset(Some("window.Messages"))("greeting", "apostrophe"))
+    Ok(messages.subset("greeting", "apostrophe")(Some("window.Messages")))
   }
 
   val subsetAllMessages = Action {
-    Ok(messages.subsetAll(Some("window.Messages"))("greeting", "apostrophe"))
+    Ok(messages.subsetAll("greeting", "apostrophe")(Some("window.Messages")))
   }
 
   val filterMessages = Action {
-    Ok(messages.filter(Some("window.Messages"))(_.startsWith("error.")))
+    Ok(messages.filter(_.startsWith("error."))(Some("window.Messages")))
   }
 
   val filterAllMessages = Action {
-    Ok(messages.filterAll(Some("window.Messages"))(_.startsWith("error.")))
+    Ok(messages.filterAll(_.startsWith("error."))(Some("window.Messages")))
   }
 }

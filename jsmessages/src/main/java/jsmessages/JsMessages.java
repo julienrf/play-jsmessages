@@ -69,7 +69,7 @@ public class JsMessages {
      * @return The function definition
      */
     public JavaScript subset(String namespace, Lang lang, String... keys) {
-        return api.subset(scala.Option.apply(namespace), Scala.toSeq(keys), lang);
+        return api.subset(Scala.toSeq(keys)).apply(scala.Option.apply(namespace), lang);
     }
 
     /**
@@ -80,7 +80,7 @@ public class JsMessages {
      * @return The function definition
      */
     public JavaScript subsetAll(String namespace, String... keys) {
-        return api.subsetAll(scala.Option.apply(namespace), Scala.toSeq(keys));
+        return api.subsetAll(Scala.toSeq(keys)).apply(scala.Option.apply(namespace));
     }
 
     /**
@@ -101,12 +101,12 @@ public class JsMessages {
      * @return The function definition
      */
     public JavaScript filter(String namespace, Lang lang, final Function<String, Object> filter) {
-        return api.filter(scala.Option.apply(namespace), new scala.runtime.AbstractFunction1<String, Object>() {
+        return api.filter(new scala.runtime.AbstractFunction1<String, Object>() {
           public Object apply(String key) {
             try { return filter.apply(key); }
             catch (Throwable t) { return false; }
           }
-        }, lang);
+        }).apply(scala.Option.apply(namespace), lang);
     }
 
     /**
@@ -116,11 +116,11 @@ public class JsMessages {
      * @return The function definition
      */
     public JavaScript filterAll(String namespace, final Function<String, Object> filter) {
-        return api.filterAll(scala.Option.apply(namespace), new scala.runtime.AbstractFunction1<String, Object>() {
+        return api.filterAll(new scala.runtime.AbstractFunction1<String, Object>() {
           public Object apply(String key) {
             try { return filter.apply(key); }
             catch (Throwable t) { return false; }
           }
-        });
+        }).apply(scala.Option.apply(namespace));
     }
 }

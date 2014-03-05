@@ -85,17 +85,13 @@ class JsMessages(implicit app: Application) {
    *         country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
    *         Play! default messages.
    */
-  def messages(implicit lang: Lang): Map[String, String] =
-    allMessages.get(lang.code)
-      .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file."))
+  def messages(implicit lang: Lang): Map[String, String] = lookupLang(allMessages, lang)
 
   /**
    * @param lang Language to retrieve messages for
    * @return The JSON formatted string of the for the given language `lang`
    */
-  private def messagesString(implicit lang: Lang): String =
-    messagesCache.get(lang.code)
-      .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file."))
+  private def messagesString(implicit lang: Lang): String = lookupLang(messagesCache, lang)
 
   /**
    * Generates a JavaScript function computing localized messages in the given implicit `Lang`.
@@ -178,16 +174,15 @@ class JsMessages(implicit app: Application) {
    * Example:
    *
    * {{{
-   *   jsMessages.subset(Some("window.Messages"))(
+   *   jsMessages.subset(
    *     "error.required",
    *     "error.number"
-   *   )
+   *   )(Some("window.Messages"))
    * }}}
    *
    * See documentation of the `apply` method for client-side instructions.
    */
-  def subset(namespace: Option[String] = None)(keys: String*)(implicit lang: Lang): JavaScript =
-     apply(namespace, formatMap(subsetMap(messages, keys: _*)))
+  def subset(keys: String*): `Option[String] => JavaScript` = filter(keys.contains)
 
   /**
    * Generates a JavaScript function computing all messages for a given keys subset, for all languages.
@@ -195,17 +190,15 @@ class JsMessages(implicit app: Application) {
    * Example:
    *
    * {{{
-   *   jsMessages.subsetAll(Some("window.MyMessages"))(
+   *   jsMessages.subsetAll(
    *     "error.required",
    *     "error.number"
-   *   )
+   *   )(Some("window.MyMessages"))
    * }}}
    *
    * See documentation of the `all` method for client-side instructions.
    */
-  def subsetAll(namespace: Option[String] = None)(keys: String*): JavaScript =
-    all(namespace, formatMap(allMessagesUnescaped.mapValues(m => subsetMap(m, keys: _*))))
-
+  def subsetAll(keys: String*): Option[String] => JavaScript = filterAll(keys.contains)
 
   /**
    * Generates a JavaScript function computing localized messages filtering keys based on a predicated.
@@ -213,13 +206,18 @@ class JsMessages(implicit app: Application) {
    * Example:
    *
    * {{{
-   *   jsMessages.filter(Some("window.Messages"))(_.startsWith("error.")
+   *   jsMessages.filter(_.startsWith("error.")(Some("window.Messages"))
    * }}}
    *
    * See documentation of the `apply` method for client-side instructions.
    */
-  def filter(namespace: Option[String] = None)(filter: String => Boolean)(implicit lang: Lang): JavaScript =
-    apply(namespace, formatMap(messages.filterKeys(filter)))
+  def filter(filter: String => Boolean): `Option[String] => JavaScript` = {
+    val filteredMessages = allMessages.mapValues(_.filterKeys(filter))
+    new `Option[String] => JavaScript` {
+      def apply(namespace: Option[String])(implicit lang: Lang) =
+        JsMessages.this.apply(namespace, formatMap(lookupLang(filteredMessages, lang)))
+    }
+  }
 
   /**
    * Generates a JavaScript function computing all messages filtering keys based on a predicated.
@@ -227,13 +225,15 @@ class JsMessages(implicit app: Application) {
    * Example:
    *
    * {{{
-   *   jsMessages.filterAll(Some("window.Messages"))(_.startsWith("error.")
+   *   jsMessages.filterAll(_.startsWith("error.")(Some("window.Messages"))
    * }}}
    *
    * See documentation of the `all` method for client-side instructions.
    */
-  def filterAll(namespace: Option[String] = None)(filter: String => Boolean): JavaScript =
-    all(namespace, formatMap(allMessagesUnescaped.mapValues(_.filterKeys(filter))))
+  def filterAll(filter: String => Boolean): Option[String] => JavaScript = {
+    val formattedMessages = formatMap(allMessagesUnescaped.mapValues(_.filterKeys(filter)))
+    namespace => all(namespace, formattedMessages)
+  }
 
   /**
    * @param namespace Optional namespace that will contain the generated function
@@ -302,12 +302,17 @@ class JsMessages(implicit app: Application) {
         #return f})()""".stripMargin('#'))
   }
 
-  private def subsetMap(values: Map[String, String], keys: String*): Map[String, String] =
-    (for {
-      key <- keys
-      message <- values.get(key)
-    } yield (key, message)).toMap
-
   private def formatMap[A : Writes](map: Map[String, A]): String = Json.toJson(map).toString()
 
+  private def lookupLang[A](data: Map[String, A], lang: Lang): A =
+    data.get(lang.code)
+      .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file."))
+
+}
+
+/**
+ * Fake `Option[String] => JavaScript` type that actually takes an additional implicit `Lang` parameter
+ */
+trait `Option[String] => JavaScript` {
+  def apply(namespace: Option[String])(implicit lang: Lang): JavaScript
 }
