@@ -2,7 +2,7 @@ package jsmessages.api
 
 import play.api.Application
 import play.api.i18n.Lang
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Writes, JsValue, Json}
 import play.api.templates.JavaScript
 
 /**
@@ -75,7 +75,7 @@ class JsMessages(implicit app: Application) {
   private val allMessagesCache: String = allMessagesJson.toString()
 
   // Per lang cache of the messages
-  private val messagesCache: Map[String, String] = allMessages.mapValues(map => Json.toJson(map).toString())
+  private val messagesCache: Map[String, String] = allMessages.mapValues(map => formatMap(map))
 
   /**
    * @param lang Language to retrieve messages for
@@ -187,7 +187,7 @@ class JsMessages(implicit app: Application) {
    * See documentation of the `apply` method for client-side instructions.
    */
   def subset(namespace: Option[String] = None)(keys: String*)(implicit lang: Lang): JavaScript =
-     apply(namespace, Json.toJson(subsetMap(messages, keys: _*)).toString())
+     apply(namespace, formatMap(subsetMap(messages, keys: _*)))
 
   /**
    * Generates a JavaScript function computing all messages for a given keys subset, for all languages.
@@ -204,8 +204,36 @@ class JsMessages(implicit app: Application) {
    * See documentation of the `all` method for client-side instructions.
    */
   def subsetAll(namespace: Option[String] = None)(keys: String*): JavaScript =
-    all(namespace, Json.toJson(allMessagesUnescaped.mapValues(m => subsetMap(m, keys: _*))).toString())
+    all(namespace, formatMap(allMessagesUnescaped.mapValues(m => subsetMap(m, keys: _*))))
 
+
+  /**
+   * Generates a JavaScript function computing localized messages filtering keys based on a predicated.
+   *
+   * Example:
+   *
+   * {{{
+   *   jsMessages.filter(Some("window.Messages"))(_.startsWith("error.")
+   * }}}
+   *
+   * See documentation of the `apply` method for client-side instructions.
+   */
+  def filter(namespace: Option[String] = None)(filter: String => Boolean)(implicit lang: Lang): JavaScript =
+    apply(namespace, formatMap(messages.filterKeys(filter)))
+
+  /**
+   * Generates a JavaScript function computing all messages filtering keys based on a predicated.
+   *
+   * Example:
+   *
+   * {{{
+   *   jsMessages.filterAll(Some("window.Messages"))(_.startsWith("error.")
+   * }}}
+   *
+   * See documentation of the `all` method for client-side instructions.
+   */
+  def filterAll(namespace: Option[String] = None)(filter: String => Boolean): JavaScript =
+    all(namespace, formatMap(allMessagesUnescaped.mapValues(_.filterKeys(filter))))
 
   /**
    * @param namespace Optional namespace that will contain the generated function
@@ -279,5 +307,7 @@ class JsMessages(implicit app: Application) {
       key <- keys
       message <- values.get(key)
     } yield (key, message)).toMap
+
+  private def formatMap[A : Writes](map: Map[String, A]): String = Json.toJson(map).toString()
 
 }
