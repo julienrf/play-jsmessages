@@ -36,7 +36,7 @@ On server-side, create an instance of the `jsmessages.api.JsMessages` class (or 
 import jsmessages.api.JsMessages
 import play.api.Play.current
 
-val jsMessages = new JsMessages
+val messages = JsMessages.default
 ```
 
 ### Generate a JavaScript asset for the client’s language
@@ -45,17 +45,17 @@ Then you typically want to define an action returning a JavaScript resource cont
 
 ```scala
 Action { implicit request =>
-  Ok(jsMessages(Some("window.Messages")))
+  Ok(messages(Some("window.Messages")))
 }
 ```
 
 Or in Java:
 
 ```java
-final static jsmessages.JsMessages jsMessages = new jsmessages.JsMessages(play.Play.application());
+final static jsmessages.JsMessages messages = jsmessages.JsMessages.create(play.Play.application());
 
 public static Result jsMessages() {
-    return ok(jsMessages.generate("window.Messages"));
+    return ok(messages.generate("window.Messages"));
 }
 ```
 
@@ -102,22 +102,25 @@ console.log(messagesFr('greeting', 'Julien')); // "Bonjour Julien!"
 
 ### Generate a JavaScript asset with a subset of your messages
 
-Last but not least, the `subset` method allows you to export only a subset of your messages in the client’s language:
+You can select which messages you want to export on client-side by using the `subset` factory method:
 
 ```scala
-Action { implicit request =>
-  Ok(messages.subset(Some("window.Messages"))(
-    "error.required",
-    "error.number"
-  ))
-}
+val messages = JsMessages.subset(
+  "error.required",
+  "error.number"
+)
 ```
 
-Similarly, the `subsetAll` method exports a subset of your messages in all languages.
+Or you can select the messages to keep by using a filter predicate:
+
+```scala
+val messages = JsMessages.filtering(_.startsWith("error."))
+```
 
 ## Changelog
 
 * v1.6.0
+  - Big changes in the API ;
   - Make it possible to return messages of all languages (thanks to Paul Dijou) ;
   - Discard methods returning HTML, keep just JavaScript.
 

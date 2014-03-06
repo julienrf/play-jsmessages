@@ -30,7 +30,9 @@ import play.api.templates.JavaScript
  *   console.log(Messages("greeting", "Julien")); // prints "Hello, Julien!"
  * }}}
  *
- * @param allMessagesData All the messages of the application, as a map of (lang -> map(key -> message pattern)).
+ * @param allMessagesData All the messages of the application, as a map of (lang -> map(key -> message pattern)). As it
+ *                        is the case in Play!, JsMessages assumes that “default” messages are indexed by the `"default"`
+ *                        and `"default.play"` language codes.
  */
 class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 
@@ -237,9 +239,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 object JsMessages {
 
   /**
-   * @return a `JsMessages` instance using the `app` message files. Override this lazy val to supply
-   * additional or other messages. As it is the case in Play!, JsMessages assumes that “default” messages are
-   * indexed by the `"default"` and `"default.play"` language codes.
+   * @return a `JsMessages` instance using the `app` message files.
    */
   def default(implicit app: Application): JsMessages = new JsMessages(play.api.i18n.Messages.messages)
 
