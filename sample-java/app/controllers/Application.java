@@ -7,7 +7,7 @@ import jsmessages.JsMessages;
 
 public class Application extends Controller {
 
-    final static JsMessages messages = new JsMessages(Play.application());
+    final static JsMessages messages = JsMessages.create(Play.application());
 
     public static Result index1() {
         return ok(index1.render());

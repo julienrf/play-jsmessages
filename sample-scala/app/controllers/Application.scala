@@ -6,7 +6,7 @@ import jsmessages.api.JsMessages
 
 object Application extends Controller {
 
-  val messages = new JsMessages
+  val messages = JsMessages.default
 
   val index = Action {
     Ok(views.html.index1())
@@ -16,7 +16,7 @@ object Application extends Controller {
     Ok(views.html.index1())
   }
 
-  val index2 = Action { implicit request =>
+  val index2 = Action {
     Ok(views.html.index2())
   }
 
@@ -56,35 +56,39 @@ object Application extends Controller {
     Ok(views.html.fr())
   }
 
+  val messagesSubset = JsMessages.subset("greeting", "apostrophe")
+
   val subset = Action {
     Ok(views.html.subset.subset())
+  }
+
+  val subsetMessages = Action { implicit request =>
+    Ok(messagesSubset(Some("window.Messages")))
   }
 
   val subsetAll = Action {
     Ok(views.html.subset.subsetAll())
   }
 
+  val subsetAllMessages = Action {
+    Ok(messagesSubset.all(Some("window.Messages")))
+  }
+
+  val filteredMessages = JsMessages.filtering(_.startsWith("error."))
+
   val filter = Action {
     Ok(views.html.filter.filter())
+  }
+
+  val filterMessages = Action { implicit request =>
+    Ok(filteredMessages(Some("window.Messages")))
   }
 
   val filterAll = Action {
     Ok(views.html.filter.filterAll())
   }
 
-  val subsetMessages = Action {
-    Ok(messages.subset("greeting", "apostrophe")(Some("window.Messages")))
-  }
-
-  val subsetAllMessages = Action {
-    Ok(messages.subsetAll("greeting", "apostrophe")(Some("window.Messages")))
-  }
-
-  val filterMessages = Action {
-    Ok(messages.filter(_.startsWith("error."))(Some("window.Messages")))
-  }
-
   val filterAllMessages = Action {
-    Ok(messages.filterAll(_.startsWith("error."))(Some("window.Messages")))
+    Ok(filteredMessages.all(Some("window.Messages")))
   }
 }

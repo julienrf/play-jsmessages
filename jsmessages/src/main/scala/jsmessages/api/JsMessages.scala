@@ -16,7 +16,7 @@ import play.api.templates.JavaScript
  *   import jsmessages.api.JsMessages
  *
  *   object Application extends Controller {
- *     val jsMessages = new JsMessages
+ *     val jsMessages = JsMessages.default
  *
  *     val messages = Action { implicit request =>
  *       Ok(jsMessages(Some("window.Messages")))
@@ -30,18 +30,9 @@ import play.api.templates.JavaScript
  *   console.log(Messages("greeting", "Julien")); // prints "Hello, Julien!"
  * }}}
  *
- * @param app Play! application to get messages from
+ * @param allMessagesData All the messages of the application, as a map of (lang -> map(key -> message pattern)).
  */
-class JsMessages(implicit app: Application) {
-
-  /**
-   * All the messages of the application, as a map of (lang -> map(key -> message)).
-   *
-   * The default implementation uses the Play! application’s message files. Override this lazy val to supply
-   * additional or other messages. As it is the case in Play!, JsMessages assumes that “default” messages are
-   * indexed by the `"default"` and `"default.play"` language codes.
-   */
-  lazy val allMessagesData: Map[String, Map[String, String]] = play.api.i18n.Messages.messages
+class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 
   // Message patterns have to escape quotes using double quotes, here we unescape them because we don’t support using quotes to escape format elements
   // TODO Also remove subformats
@@ -169,73 +160,6 @@ class JsMessages(implicit app: Application) {
   def all(namespace: Option[String] = None): JavaScript = all(namespace, allMessagesCache)
 
   /**
-   * Generates a JavaScript function computing localized messages for a given keys subset and language.
-   *
-   * Example:
-   *
-   * {{{
-   *   jsMessages.subset(
-   *     "error.required",
-   *     "error.number"
-   *   )(Some("window.Messages"))
-   * }}}
-   *
-   * See documentation of the `apply` method for client-side instructions.
-   */
-  def subset(keys: String*): `Option[String] => JavaScript` = filter(keys.contains)
-
-  /**
-   * Generates a JavaScript function computing all messages for a given keys subset, for all languages.
-   *
-   * Example:
-   *
-   * {{{
-   *   jsMessages.subsetAll(
-   *     "error.required",
-   *     "error.number"
-   *   )(Some("window.MyMessages"))
-   * }}}
-   *
-   * See documentation of the `all` method for client-side instructions.
-   */
-  def subsetAll(keys: String*): Option[String] => JavaScript = filterAll(keys.contains)
-
-  /**
-   * Generates a JavaScript function computing localized messages filtering keys based on a predicated.
-   *
-   * Example:
-   *
-   * {{{
-   *   jsMessages.filter(_.startsWith("error."))(Some("window.Messages"))
-   * }}}
-   *
-   * See documentation of the `apply` method for client-side instructions.
-   */
-  def filter(filter: String => Boolean): `Option[String] => JavaScript` = {
-    val filteredMessages = allMessages.mapValues(_.filterKeys(filter))
-    new `Option[String] => JavaScript` {
-      def apply(namespace: Option[String])(implicit lang: Lang) =
-        JsMessages.this.apply(namespace, formatMap(lookupLang(filteredMessages, lang)))
-    }
-  }
-
-  /**
-   * Generates a JavaScript function computing all messages filtering keys based on a predicated.
-   *
-   * Example:
-   *
-   * {{{
-   *   jsMessages.filterAll(_.startsWith("error."))(Some("window.Messages"))
-   * }}}
-   *
-   * See documentation of the `all` method for client-side instructions.
-   */
-  def filterAll(filter: String => Boolean): Option[String] => JavaScript = {
-    val formattedMessages = formatMap(allMessagesUnescaped.mapValues(_.filterKeys(filter)))
-    namespace => all(namespace, formattedMessages)
-  }
-
-  /**
    * @param namespace Optional namespace that will contain the generated function
    * @param messages Map of (key -> message) to use, as a JSON literal
    * @return a JavaScript function taking a key and eventual arguments and returning a formatted message
@@ -310,9 +234,47 @@ class JsMessages(implicit app: Application) {
 
 }
 
-/**
- * Fake `Option[String] => JavaScript` type that actually takes an additional implicit `Lang` parameter
- */
-trait `Option[String] => JavaScript` {
-  def apply(namespace: Option[String])(implicit lang: Lang): JavaScript
+object JsMessages {
+
+  /**
+   * @return a `JsMessages` instance using the `app` message files. Override this lazy val to supply
+   * additional or other messages. As it is the case in Play!, JsMessages assumes that “default” messages are
+   * indexed by the `"default"` and `"default.play"` language codes.
+   */
+  def default(implicit app: Application): JsMessages = new JsMessages(play.api.i18n.Messages.messages)
+
+  /**
+   * Example:
+   *
+   * {{{
+   *   val jsMessages = JsMessages.filtering(_.startsWith("error."))
+   * }}}
+   *
+   * @param filter a predicate to filter message keys
+   * @param app the application to retrieve messages from
+   * @return a `JsMessages` instance using the `app` message files, keeping only messages which keys satisfy `filter`
+   */
+  def filtering(filter: String => Boolean)(implicit app: Application): JsMessages = {
+    val data = play.api.i18n.Messages.messages
+    new JsMessages(data.mapValues(_.filterKeys(filter)))
+  }
+
+  /**
+   * Example:
+   *
+   * {{{
+   *   val jsMessages = JsMessages.subset(
+   *     "error.required",
+   *     "error.number"
+   *   )
+   * }}}
+   *
+   * @param keys the list of keys to keep
+   * @param app the application to retrieve messages from
+   * @return a `JsMessages` instance using the `app` message files, keeping only messages which keys are in `keys`
+   */
+  def subset(keys: String*)(implicit app: Application): JsMessages = filtering(keys.contains)
+
+  /** Convenient alias for `default` for Java users */
+  def create(app: Application) = default(app)
 }

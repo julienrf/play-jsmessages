@@ -15,10 +15,10 @@ public class JsMessages {
     final jsmessages.api.JsMessages api;
 
     /**
-     * @param app Play! application to get messages from
+     * @param api The underlying API to use
      */
-    public JsMessages(Application app) {
-        this.api = new jsmessages.api.JsMessages(app.getWrappedApplication());
+    private JsMessages(jsmessages.api.JsMessages api) {
+        this.api = api;
     }
 
     /**
@@ -51,76 +51,38 @@ public class JsMessages {
     }
 
     /**
-     * Generates a JavaScript function computing localized messages for a given set of i18n keys.
-     * @param namespace Namespace to which assign the generated function
+     * Factory method using the given application’s messages.
+     * @param app Application to use
+     */
+    public static JsMessages create(Application app) {
+        return new JsMessages(jsmessages.api.JsMessages.create(app.getWrappedApplication()));
+    }
+
+    /**
+     * Factory method keeping only a subset of the application’s messages.
+     * @param app Application to use
      * @param keys Keys to use
-     * @return The function definition
      */
-    public JavaScript subset(String namespace, String... keys) {
-        return subset(namespace, Http.Context.current().lang(),keys);
+    public static JsMessages subset(Application app, String... keys) {
+        return new JsMessages(jsmessages.api.JsMessages.subset(Scala.toSeq(keys), app.getWrappedApplication()));
     }
 
     /**
-     * Generates a JavaScript function computing localized messages for a given set of i18n keys,
-     * using the given Lang.
-     * @param namespace Namespace of which assign the generated function
-     * @param lang Lang to use
-     * @param keys Keys to use
-     * @return The function definition
-     */
-    public JavaScript subset(String namespace, Lang lang, String... keys) {
-        return api.subset(Scala.toSeq(keys)).apply(scala.Option.apply(namespace), lang);
-    }
-
-    /**
-     * Generates a JavaScript function computing all messages,
-     * using the given Lang.
-     * @param namespace Namespace of which assign the generated function
-     * @param keys Keys to use
-     * @return The function definition
-     */
-    public JavaScript subsetAll(String namespace, String... keys) {
-        return api.subsetAll(Scala.toSeq(keys)).apply(scala.Option.apply(namespace));
-    }
-
-    /**
-     * Generates a JavaScript function computing localized messages filtering i18n keys based on a predicate.
-     * @param namespace Namespace to which assign the generated function
+     * Factory method filtering the application’s messages according to a predicate.
+     * @param app Application to use
      * @param filter the predicate to use
-     * @return The function definition
      */
-    public JavaScript filter(String namespace, Function<String, Object> filter) {
-        return filter(namespace, Http.Context.current().lang(), filter);
+    public static JsMessages filtering(Application app, final Function<String, Boolean> filter) {
+        return new JsMessages(jsmessages.api.JsMessages.filtering(new scala.runtime.AbstractFunction1<String, Object>() {
+            @Override
+            public Boolean apply(String key) {
+                try {
+                    return filter.apply(key);
+                } catch (Throwable throwable) {
+                    return false;
+                }
+            }
+        }, app.getWrappedApplication()));
     }
 
-    /**
-     * Generates a JavaScript function computing localized messages filtering i18n keys based on a predicate.
-     * @param namespace Namespace to which assign the generated function
-     * @param lang Lang to use
-     * @param filter the predicate to use
-     * @return The function definition
-     */
-    public JavaScript filter(String namespace, Lang lang, final Function<String, Object> filter) {
-        return api.filter(new scala.runtime.AbstractFunction1<String, Object>() {
-          public Object apply(String key) {
-            try { return filter.apply(key); }
-            catch (Throwable t) { return false; }
-          }
-        }).apply(scala.Option.apply(namespace), lang);
-    }
-
-    /**
-     * Generates a JavaScript function computing all messages filtering i18n keys based on a predicate.
-     * @param namespace Namespace to which assign the generated function
-     * @param filter the predicate to use
-     * @return The function definition
-     */
-    public JavaScript filterAll(String namespace, final Function<String, Object> filter) {
-        return api.filterAll(new scala.runtime.AbstractFunction1<String, Object>() {
-          public Object apply(String key) {
-            try { return filter.apply(key); }
-            catch (Throwable t) { return false; }
-          }
-        }).apply(scala.Option.apply(namespace));
-    }
 }
