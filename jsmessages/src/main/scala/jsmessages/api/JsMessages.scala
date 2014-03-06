@@ -82,9 +82,10 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 
   /**
    * @param lang Language to retrieve messages for
-   * @return The JSON formatted string of the for the given language `lang`
+   * @return The JSON formatted string of the for the given language `lang`. This is strictly equivalent to
+   *         `Json.toJson(jsMessages.messages).toString`, but may be faster due to the use of caching.
    */
-  private def messagesString(implicit lang: Lang): String = lookupLang(messagesCache, lang)
+  def messagesString(implicit lang: Lang): String = lookupLang(messagesCache, lang)
 
   /**
    * Generates a JavaScript function computing localized messages in the given implicit `Lang`.
