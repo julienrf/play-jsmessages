@@ -50,13 +50,16 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    * Play! default messages.
    */
   lazy val allMessages: Map[String, Map[String, String]] = for ((lang, msgs) <- allMessagesUnescaped) yield {
-    val maybeCountry = if (lang.contains("-")) Some(lang.split("-")(0)) else None
-    lang -> (
-      allMessagesUnescaped.get("default.play").getOrElse(Map.empty) ++
-      allMessagesUnescaped.get("default").getOrElse(Map.empty) ++
-      maybeCountry.flatMap(country => allMessagesUnescaped.get(country)).getOrElse(Map.empty) ++
-      msgs
-    )
+    lang match {
+      // Do not merge with "default" if its "default.play"
+      case "default.play" => lang -> allMessagesUnescaped.get("default.play").getOrElse(Map.empty)
+      case _ => lang -> (
+        allMessagesUnescaped.get("default.play").getOrElse(Map.empty) ++
+        allMessagesUnescaped.get("default").getOrElse(Map.empty) ++
+        extractCountry(lang).flatMap(country => allMessagesUnescaped.get(country)).getOrElse(Map.empty) ++
+        msgs
+      )
+    }
   }
 
   /**
@@ -231,9 +234,17 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 
   private def formatMap[A : Writes](map: Map[String, A]): String = Json.toJson(map).toString()
 
+  private def extractCountry(lang: String): Option[String] = if (lang.contains("-")) Some(lang.split("-")(0)) else None
+
   private def lookupLang[A](data: Map[String, A], lang: Lang): A =
+    // Try to get the messages for the lang
     data.get(lang.code)
-      .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file."))
+      // If none, try to get it from its country
+      .orElse(extractCountry(lang.code).flatMap(country => data.get(country)))
+      // If none, fallback to default
+      .orElse(data.get("default"))
+      // If none, screw that, crash the system! It's your fault for no having a default.
+      .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file or at least provide a default messages file."))
 
 }
 
