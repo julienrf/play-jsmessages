@@ -51,7 +51,7 @@ public class JsMessages {
     }
 
     /**
-     * Factory method using the given application’s messages.
+     * Factory method using the given application's messages.
      * @param app Application to use
      */
     public static JsMessages create(Application app) {
@@ -59,7 +59,7 @@ public class JsMessages {
     }
 
     /**
-     * Factory method keeping only a subset of the application’s messages.
+     * Factory method keeping only a subset of the application's messages.
      * @param app Application to use
      * @param keys Keys to use
      */
@@ -68,7 +68,7 @@ public class JsMessages {
     }
 
     /**
-     * Factory method filtering the application’s messages according to a predicate.
+     * Factory method filtering the application's messages according to a predicate.
      * @param app Application to use
      * @param filter the predicate to use
      */
