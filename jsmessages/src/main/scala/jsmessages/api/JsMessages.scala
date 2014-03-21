@@ -201,21 +201,21 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
     // f(lang,key,args...): if only lang, return anonymous function always calling h by prefixing arguments with lang
     //                      else, just call h with current arguments
     JavaScript(s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(l,k){
-          #function g(k){
-            #var r=f.messages[l][k];
-            #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][k];}
-            #if (r===u) {r=f.messages['default'] && f.messages['default'][k];}
-            #if (r===u) {r=f.messages['default.play'] && f.messages['default.play'][k];}
+          #function g(kg){
+            #var r=f.messages[l] && f.messages[l][kg];
+            #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][kg];}
+            #if (r===u) {r=f.messages['default'] && f.messages['default'][kg];}
+            #if (r===u) {r=f.messages['default.play'] && f.messages['default.play'][kg];}
             #return r;
           #}
-          #function h(k){
+          #function h(kh){
             #var m;
-            #if(typeof k==='object'){
-              #for(var i=0,le=k.length;i<le&&g(k[i])===u;++i);
-              #m=g(k[i])||k[0];
+            #if(typeof kh==='object'){
+              #for(var i=0,le=kh.length;i<le&&g(kh[i])===u;++i);
+              #m=g(kh[i])||kh[0];
             #}else{
-              #m=g(k);
-              #m=((m!==u)?m:k);
+              #m=g(kh);
+              #m=((m!==u)?m:kh);
             #}
             #for(i=1,le=arguments.length;i<le;++i){
               #m=m.replace('{'+(i-1)+'}',arguments[i])
