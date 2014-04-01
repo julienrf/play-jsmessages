@@ -24,7 +24,7 @@ Previous versions are available here:
 
 ## API Documentation
 
-You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.0-SNAPSHOT/api/), which contains the documentation of both the Scala and Java APIs.
+You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.0/api/), which contains the documentation of both the Scala and Java APIs.
 
 ## Quick start
 
