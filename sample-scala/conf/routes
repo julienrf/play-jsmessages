@@ -11,6 +11,7 @@ GET     /all/2                      controllers.Application.all2
 GET     /en                         controllers.Application.en
 GET     /enUS                       controllers.Application.enUS
 GET     /fr                         controllers.Application.fr
+GET     /cn                         controllers.Application.cn
 GET     /messages.js                controllers.Application.jsMessages
 GET     /all-messages.js            controllers.Application.allJsMessages
 GET     /messages-tmpl.js           controllers.Application.jsMessagesTmpl

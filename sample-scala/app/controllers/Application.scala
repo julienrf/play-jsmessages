@@ -56,6 +56,10 @@ object Application extends Controller {
     Ok(views.html.fr())
   }
 
+  val cn = Action {
+    Ok(views.html.cn())
+  }
+
   val messagesSubset = JsMessages.subset("greeting", "apostrophe")
 
   val subset = Action {
