@@ -49,6 +49,8 @@ lazy val jsmessages = project
     }
   )
 
+useGpg := true
+
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
   .settings(commonSettings: _*)
   .settings(play.Project.playScalaSettings: _*)
