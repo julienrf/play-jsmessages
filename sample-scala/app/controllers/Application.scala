@@ -60,6 +60,10 @@ object Application extends Controller {
     Ok(views.html.cn())
   }
 
+  val noLang = Action {
+    Ok(views.html.noLang())
+  }
+
   val messagesSubset = JsMessages.subset("greeting", "apostrophe")
 
   val subset = Action {

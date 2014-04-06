@@ -203,7 +203,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
     JavaScript(s""" #${namespace.map{_ + "="}.getOrElse("")}(function(u){function f(l,k){
           #function g(kg){
             #var r=f.messages[l] && f.messages[l][kg];
-            #if (r===u&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][kg];}
+            #if (r===u&&l&&l.indexOf('-')>-1) {var lg=l.split('-')[0];r=f.messages[lg] && f.messages[lg][kg];}
             #if (r===u) {r=f.messages['default'] && f.messages['default'][kg];}
             #if (r===u) {r=f.messages['default.play'] && f.messages['default.play'][kg];}
             #return r;
@@ -225,7 +225,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
           #if(k===undefined){
             #return h;
           #}else{
-            #return h.apply(u, Array.prototype.slice.call(arguments, 1));
+            #return h.apply({}, Array.prototype.slice.call(arguments, 1));
           #}
         #}
         #f.messages=$messages;
