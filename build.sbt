@@ -2,7 +2,7 @@ parallelExecution in Global := false
 
 val commonSettings = Seq(
   organization := "org.julienrf",
-  version := "1.6.0",
+  version := "1.6.1-SNAPSHOT",
   scalaVersion := "2.10.0"
 )
 
@@ -43,13 +43,12 @@ lazy val jsmessages = project
         </developer>
       </developers>
     ),
+    useGpg := true,
     homePage := Path.userHome / "sites" / "julienrf.github.com",
     publishDoc := {
       IO.copyDirectory((doc in Compile).value, homePage.value / "play-jsmessages" / version.value / "api")
     }
   )
-
-useGpg := true
 
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
   .settings(commonSettings: _*)
