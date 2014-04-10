@@ -1,0 +1,51 @@
+@()
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>JsMessages Scala Sample</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    </head>
+    <body>
+        <script type="text/javascript" src="@routes.Application.allJsMessages()"></script>
+        <script type="text/javascript">
+          (function () {
+            var tests = [];
+            var MessagesUndefined = Messages(undefined);
+
+            tests.push(MessagesUndefined('greeting', 'World', 'Ignore this') + MessagesUndefined('empty'));
+            tests.push(MessagesUndefined(['wrong', 'try again', 'greeting'], 'People'));
+            tests.push(MessagesUndefined('root.parent.child'));
+            tests.push(MessagesUndefined('multiple.arguments', 'Zero', 1));
+            tests.push(MessagesUndefined('wrong.key'));
+            tests.push(MessagesUndefined('apostrophe'));
+
+            // Updating some messages
+            Messages.messages['default']['greeting'] = 'Hi there {0}!';
+            Messages.messages['default']['wrong.key'] = 'Now valid';
+
+            tests.push(MessagesUndefined('greeting', 'World', 'Ignore this'));
+            tests.push(MessagesUndefined('wrong.key'));
+
+            // Updating all messages
+            Messages.messages = {'default': {
+              'greeting': 'Greetings baby!',
+              'multiple.arguments': '{0}, {1} and {2}'
+            }, 'fr': {
+              'greeting': 'Salut toi!',
+              'multiple.arguments': '{0}, {1} et {2}'
+            }};
+
+            tests.push(MessagesUndefined('greeting', 'No World', 'Ignore this'));
+            tests.push(MessagesUndefined('multiple.arguments', 'Zero', 1111, true));
+
+            for (var i = 0, l = tests.length; i < l; ++i) {
+              var el = document.createElement('div');
+              el.innerHTML = tests[i];
+              document.body.appendChild(el);
+            }
+          })();
+        </script>
+    </body>
+</html>

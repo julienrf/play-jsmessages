@@ -91,6 +91,12 @@ class IntegrationSpec extends Specification {
           allDivsCn.get(kv._2).getText must equalTo (kv._1)
         }
 
+        browser.goTo("http://localhost:3333/noLang")
+        val allDivsNoLang = browser.$("div")
+        testsEn.foreach { kv =>
+          allDivsNoLang.get(kv._2).getText must equalTo (kv._1)
+        }
+
         val testsSubset = List(
           "Hello US World!",
           "Hello US People!",
