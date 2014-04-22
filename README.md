@@ -11,10 +11,10 @@ Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to se
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.0"
+libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.1"
 ```
 
-The current 1.6.0 version is compatible with Play! 2.2.
+The current 1.6.1 version is compatible with Play! 2.2.
 
 Previous versions are available here:
  * [`1.5.2`](https://github.com/julienrf/play-jsmessages/tree/1.5.2) for play-2.2 ;
@@ -24,7 +24,7 @@ Previous versions are available here:
 
 ## API Documentation
 
-You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.0/api/), which contains the documentation of both the Scala and Java APIs.
+You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.1/api/), which contains the documentation of both the Scala and Java APIs.
 
 ## Quick start
 
@@ -100,6 +100,8 @@ val messagesFr = Messages('fr'); // Use only the 'fr' messages
 console.log(messagesFr('greeting', 'Julien')); // "Bonjour Julien!"
 ```
 
+Note: if you pass `undefined` as the language parameter, it will use the default messages.
+
 ### Generate a JavaScript asset with a subset of your messages
 
 You can select which messages you want to export on client-side by using the `subset` factory method:
@@ -118,6 +120,9 @@ val messages = JsMessages.filtering(_.startsWith("error."))
 ```
 
 ## Changelog
+
+* v1.6.1
+  - Fix crash when `undefined` is passed as the language parameter (thanks to Paul Dijou).
 
 * v1.6.0
   - Big changes in the API ;

@@ -2,7 +2,8 @@ parallelExecution in Global := false
 
 val commonSettings = Seq(
   organization := "org.julienrf",
-  version := "1.6.1-SNAPSHOT",
+  version := "1.6.1",
+  javacOptions in Compile ++= Seq("-source", "1.6", "-target", "1.6"),
   scalaVersion := "2.10.0"
 )
 
@@ -14,7 +15,6 @@ lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
     name := "play-jsmessages",
-    javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     libraryDependencies += "com.typesafe.play" %% "play" % "2.2.0",
     resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
     publishMavenStyle := true,
