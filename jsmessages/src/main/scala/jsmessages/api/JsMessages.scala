@@ -3,7 +3,7 @@ package jsmessages.api
 import play.api.Application
 import play.api.i18n.Lang
 import play.api.libs.json.{Writes, JsValue, Json}
-import play.api.templates.JavaScript
+import play.twirl.api.JavaScript;
 
 /**
  * Generate a JavaScript function computing localized messages of a Play! application.

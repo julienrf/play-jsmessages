@@ -11,12 +11,13 @@ Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to se
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.1"
+libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.2"
 ```
 
-The current 1.6.1 version is compatible with Play! 2.2.
+The current 1.6.2 version is compatible with Play! 2.3.
 
 Previous versions are available here:
+ * [`1.6.1`](https://github.com/julienrf/play-jsmessages/tree/1.6.1) for play-2.2 ;
  * [`1.5.2`](https://github.com/julienrf/play-jsmessages/tree/1.5.2) for play-2.2 ;
  * [`1.5.0`](https://github.com/julienrf/play-jsmessages/tree/1.5.0) for play-2.1 ;
  * [`1.3`](https://github.com/julienrf/play-jsmessages/tree/403dc8d7248c965c827b70edeff55016ae274bef) for play-2.0 ;
@@ -24,7 +25,7 @@ Previous versions are available here:
 
 ## API Documentation
 
-You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.1/api/), which contains the documentation of both the Scala and Java APIs.
+You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/1.6.2/api/), which contains the documentation of both the Scala and Java APIs.
 
 ## Quick start
 
@@ -120,6 +121,9 @@ val messages = JsMessages.filtering(_.startsWith("error."))
 ```
 
 ## Changelog
+
+* v1.6.2
+  - Play 2.3.x compatibility.
 
 * v1.6.1
   - Fix crash when `undefined` is passed as the language parameter (thanks to Paul Dijou).
