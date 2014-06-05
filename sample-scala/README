@@ -1,4 +1,4 @@
 A simple sample for the Play-JsMessages library
 ===============================================
 
-Run `play run`, browse http://localhost:9000/, change your browser’s preferred lang and reload the page.
+Run `activator run`, browse http://localhost:9000/, change your browser’s preferred lang and reload the page.

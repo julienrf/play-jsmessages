@@ -5,6 +5,7 @@ import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.test.Helpers.{await => pawait}
+import play.api.Play.current
 import play.api.libs.ws.WS
 
 class IntegrationSpec extends Specification {

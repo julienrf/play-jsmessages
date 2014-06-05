@@ -1,7 +1,7 @@
 package jsmessages;
 
 import play.Application;
-import play.api.templates.JavaScript;
+import play.twirl.api.JavaScript;
 import play.i18n.Lang;
 import play.libs.Scala;
 import play.libs.F.Function;
