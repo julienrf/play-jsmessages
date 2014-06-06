@@ -15,6 +15,7 @@ lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
     name := "play-jsmessages",
+    crossScalaVersions := Seq("2.10.4", "2.11.1"),
     libraryDependencies ++= Seq(
       ws,
       "com.typesafe.play" %% "play" % "2.3.0"
