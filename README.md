@@ -1,8 +1,8 @@
 # Play JsMessages library [![Build Status](https://travis-ci.org/julienrf/play-jsmessages.png?branch=master)](https://travis-ci.org/julienrf/play-jsmessages)
 
-This library allows you to compute localized messages on client-side, in Play! projects.
+This library allows you to compute localized messages on client-side, in Play projects.
 
-Basically, play-jsmessages takes the i18n messages of your Play! application, sends them to the client-side as a JSON object and defines a JavaScript function returning a message value from a given language and the message key and arguments.
+Basically, play-jsmessages takes the i18n messages of your Play application, sends them to the client-side as a JSON object and defines a JavaScript function returning a message value from a given language and the message key and arguments.
 
 Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to see it in action.
 
@@ -14,7 +14,7 @@ Add a dependency on the following artifact:
 libraryDependencies += "org.julienrf" %% "play-jsmessages" % "1.6.2"
 ```
 
-The current 1.6.2 version is compatible with Play! 2.3.
+The current 1.6.2 version is compatible with Play 2.3 and both Scala 2.10 and 2.11.
 
 Previous versions are available here:
  * [`1.6.1`](https://github.com/julienrf/play-jsmessages/tree/1.6.1) for play-2.2 ;
@@ -60,7 +60,7 @@ public static Result jsMessages() {
 }
 ```
 
-The above code creates a Play! action that returns a JavaScript fragment containing the localized messages of the application for the client language and defining a global function `window.Messages`. This function returns a localized message given its key and its arguments:
+The above code creates a Play action that returns a JavaScript fragment containing the localized messages of the application for the client language and defining a global function `window.Messages`. This function returns a localized message given its key and its arguments:
 
 ```javascript
 console.log(Messages('greeting', 'Julien')); // will print e.g. "Hello, Julien!" or "Bonjour Julien!"
