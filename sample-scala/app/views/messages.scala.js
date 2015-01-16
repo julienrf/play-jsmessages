@@ -1,3 +1,3 @@
-@(messages: jsmessages.api.JsMessages)(implicit lang: Lang)
+@(messages: jsmessages.JsMessages)(implicit lang: Lang)
 
 @messages(Some("window.Messages"))
