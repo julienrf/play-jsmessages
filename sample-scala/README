@@ -1,4 +1,0 @@
-A simple sample for the Play-JsMessages library
-===============================================
-
-From the root directory (`play-jsmessages/`), run `sbt`, `project sample-scala` and then `run`. Browse http://localhost:9000/, change your browser’s preferred lang and reload the page.

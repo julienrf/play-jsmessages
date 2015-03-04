@@ -54,10 +54,25 @@ lazy val jsmessages = project
     }
   )
 
-lazy val sampleScala = Project("sample-scala", file("sample-scala"))
+lazy val sampleScala = Project("code-sample", file("sample-scala/code-sample"))
   .settings(commonSettings: _*)
   .enablePlugins(PlayScala)
   .dependsOn(jsmessages)
+
+lazy val samplePlayingJsmessages = Project("playing-jsmessages", file("sample-scala/playing-jsmessages"))
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+     "org.webjars" %% "webjars-play" % "2.3.0-2",
+     "org.webjars" % "bootstrap" % "3.1.1-2",
+     "org.webjars" % "bootswatch-darkly" % "3.3.1+2",
+     "org.webjars" % "html5shiv" % "3.7.0",
+     "org.webjars" % "respond" % "1.4.2"
+    )
+  )
+  .enablePlugins(PlayScala)
+  .dependsOn(jsmessages)
+
 
 lazy val sampleJava = Project("sample-java", file("sample-java"))
   .settings(commonSettings: _*)

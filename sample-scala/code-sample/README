@@ -1,0 +1,4 @@
+A simple sample for the Play-JsMessages library
+===============================================
+
+From the root directory (`play-jsmessages/`), run `sbt`, `project code-sample` and then `run`. Browse http://localhost:9000/, change your browser’s preferred lang and reload the page.
