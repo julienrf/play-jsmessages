@@ -1,0 +1,65 @@
+@(message: String)
+
+@main("Welcome to Play") {
+	
+	<!-- Begin page content -->
+	<div class="container">
+		<div class="page-header">
+			<h3>
+				@message
+			</h3>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="form-group">
+               		<div class="input-group">
+                 		<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                 		<input id="name" name="name" type="text" class="form-control" placeholder="Enter Your Name">
+                 		<span class="input-group-btn">
+                   			<button type="button" class="btn btn-default" onclick="populateMessages();">Check</button>
+                 		</span>
+               		</div>
+                </div>
+			</div>
+		</div>
+		
+		<div class="row">
+        	<div class="col-lg-12">
+          		<div class="bs-component">
+            		<div class="panel panel-info">
+              			<div class="panel-heading">
+                			<h3 class="panel-title">English</h3>
+              			</div>
+              			<div id="englishPanelContent" class="panel-body">
+              			</div>
+            		</div>
+
+            		<div class="panel panel-success">
+              			<div class="panel-heading">
+                			<h3 class="panel-title">Hindi</h3>
+              			</div>
+              			<div id="hindiPanelContent" class="panel-body">
+              			</div>
+            		</div>
+
+            		<div class="panel panel-warning">
+              			<div class="panel-heading">
+                			<h3 class="panel-title">Latin</h3>
+              			</div>
+              			<div id="latinPanelContent" class="panel-body">
+              			</div>
+            		</div>
+            		
+            		<div class="panel panel-danger">
+              			<div class="panel-heading">
+                			<h3 class="panel-title">French</h3>
+              			</div>
+              			<div id="frenchPanelContent" class="panel-body">
+              			</div>
+            		</div>
+          		</div>
+        	</div>
+      	</div>
+    </div>
+}
