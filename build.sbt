@@ -54,7 +54,7 @@ lazy val jsmessages = project
     }
   )
 
-lazy val sampleScala = Project("sample-scala", file("sample-scala/code-sample"))
+lazy val sampleScala = Project("code-sample", file("sample-scala/code-sample"))
   .settings(commonSettings: _*)
   .enablePlugins(PlayScala)
   .dependsOn(jsmessages)
