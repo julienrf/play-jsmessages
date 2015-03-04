@@ -1,0 +1,3 @@
+# Messages
+
+welcome=Bienvenue {0}!

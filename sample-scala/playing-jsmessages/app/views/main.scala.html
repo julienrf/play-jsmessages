@@ -1,0 +1,40 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootswatch-darkly", "bootstrap.min.css"))">
+		
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	      <script src="@routes.WebJarAssets.at(WebJarAssets.locate("html5shiv.js"))"></script>
+	      <script src="@routes.WebJarAssets.at(WebJarAssets.locate("respond.min.js"))"></script>
+	    <![endif]-->
+	    
+    </head>
+    <body>
+    	
+    	@navbar()
+    	
+        @content
+        
+        <!-- Bootstrap core JavaScript
+	    ================================================== -->
+	    <!-- Placed at the end of the document so the pages load faster -->
+	    <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
+	    
+	    <!-- Latest compiled and minified JavaScript -->
+		<script src="@routes.WebJarAssets.at(WebJarAssets.locate("bootswatch-darkly", "bootstrap.min.js"))"></script>
+		
+        <script type="text/javascript" src="@routes.JsMessagesController.jsMessages()"></script>
+        <script src="@routes.Assets.at("javascripts/app.js")" type="text/javascript"></script>
+    </body>
+</html>
