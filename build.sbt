@@ -3,7 +3,6 @@ parallelExecution in Global := false
 val commonSettings = Seq(
   organization := "org.julienrf",
   version := "2.0.0",
-  javacOptions in Compile ++= Seq("-source", "1.6", "-target", "1.6"),
   scalaVersion := "2.11.4"
 )
 
@@ -18,7 +17,7 @@ lazy val jsmessages = project
     crossScalaVersions := Seq("2.10.4", "2.11.4"),
     libraryDependencies ++= Seq(
       ws,
-      "com.typesafe.play" %% "play" % "2.4.0-M2"
+      component("play")
     ),
     resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
     publishMavenStyle := true,
@@ -56,13 +55,15 @@ lazy val jsmessages = project
 
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
   .settings(commonSettings: _*).settings(
-    routesGenerator := InjectedRoutesGenerator
+    routesGenerator := InjectedRoutesGenerator,
+    libraryDependencies += specs2 % Test
   ).enablePlugins(PlayScala)
   .dependsOn(jsmessages)
 
 lazy val sampleJava = Project("sample-java", file("sample-java"))
-  .settings(commonSettings: _*)
-  .enablePlugins(PlayJava)
+  .settings(commonSettings: _*).settings(
+    libraryDependencies += specs2 % Test
+  ).enablePlugins(PlayJava)
   .dependsOn(jsmessages)
 
 lazy val playJsmessages = project.in(file("."))

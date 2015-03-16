@@ -15,13 +15,13 @@ class IntegrationSpec extends Specification {
   case class Scope(browser: TestBrowser, ws: WSClient, baseUrl: String)
   
   def example[A : AsResult](f: Scope => A): Result = {
-    val ctx = ApplicationLoader.createContext(new Environment(new java.io.File("."), ApplicationLoader.getClass.getClassLoader, Mode.Test))
+    val ctx = ApplicationLoader.createContext(Environment.simple())
     val components = new BuiltInComponentsFromContext(ctx) with JsMessagesComponents with NingWSComponents
     val webDriver = WebDriverFactory(Helpers.HTMLUNIT)
     val port = 3333
     val baseUrl = s"http://localhost:$port"
     val browser = TestBrowser(webDriver, Some(baseUrl))
-    Helpers.running(TestServer(port, components.application, serverProvider = NettyServer.defaultServerProvider))(
+    Helpers.running(TestServer(port, components.application))(
       AsResult.effectively(f(Scope(browser, components.wsClient, baseUrl)))
     )
   }
