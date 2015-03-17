@@ -1,6 +1,6 @@
 package jsmessages
 
-import play.api.i18n.Lang
+import play.api.i18n.{Messages, Lang}
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.twirl.api.JavaScript
 
@@ -73,21 +73,21 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
   private val messagesCache: Map[String, String] = allMessages.mapValues(map => formatMap(map))
 
   /**
-   * @param lang Language to retrieve messages for
+   * @param messages Messages instance containing the lang to retrieve messages for
    * @return The messages defined for the given language `lang`, as a map
    *         of (key -> message). The message corresponding to a given key is found by searching in the
    *         following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
    *         country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
    *         Play default messages.
    */
-  def messages(implicit lang: Lang): Map[String, String] = lookupLang(allMessages, lang)
+  def messages(implicit messages: Messages): Map[String, String] = lookupLang(allMessages, messages)
 
   /**
-   * @param lang Language to retrieve messages for
+   * @param messages Messages instance containing the lang to retrieve messages for
    * @return The JSON formatted string of the for the given language `lang`. This is strictly equivalent to
    *         `Json.toJson(jsMessages.messages).toString`, but may be faster due to the use of caching.
    */
-  def messagesString(implicit lang: Lang): String = lookupLang(messagesCache, lang)
+  def messagesString(implicit messages: Messages): String = lookupLang(messagesCache, messages)
 
   /**
    * Generates a JavaScript function computing localized messages in the given implicit `Lang`.
@@ -119,12 +119,12 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    *                  function will just generate a function. Otherwise it will generate a function and assign
    *                  it to the given namespace. Note: you can set something like `Some("var Messages")` to use
    *                  a fresh variable.
-   * @param lang Language to use. The message corresponding to a given key is found by searching in the
+   * @param messages Messages instance defining the language to use. The message corresponding to a given key is found by searching in the
    *         following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
    *         country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
    *         Play default messages.
    */
-  def apply(namespace: Option[String] = None)(implicit lang: Lang): JavaScript = apply(namespace, messagesString)
+  def apply(namespace: Option[String] = None)(implicit messages: Messages): JavaScript = apply(namespace, messagesString)
 
   /**
    * Generates a JavaScript function computing localized messages in all the languages of the application.
@@ -235,7 +235,8 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 
   private def extractCountry(lang: String): Option[String] = if (lang.contains("-")) Some(lang.split("-")(0)) else None
 
-  private def lookupLang[A](data: Map[String, A], lang: Lang): A =
+  private def lookupLang[A](data: Map[String, A], messages: Messages): A = {
+    val lang = messages.lang
     // Try to get the messages for the lang
     data.get(lang.code)
       // If none, try to get it from its country
@@ -244,5 +245,6 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
       .orElse(data.get("default"))
       // If none, screw that, crash the system! It's your fault for no having a default.
       .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file or at least provide a default messages file."))
+  }
 
 }

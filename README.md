@@ -130,13 +130,16 @@ val messages = Action { implicit request =>
 }
 ```
 
+Note that for this to work the `apply` method of `jsMessages` needs to have an implicit `play.api.i18n.Messages` value. You can
+get one by mixing the `play.api.i18n.I18nSupport` trait in your controller.
+
 Or in Java:
 
 ```java
-import play.mvc.Http;
+import jsmessages.japi.Helper;
 
 public Result messages() {
-    return ok(jsMessages.apply(Scala.Option("window.Messages"), Http.Context.current().lang()));
+    return ok(jsMessages.apply(Scala.Option("window.Messages"), Helper.messagesFromCurrentHttpContext()));
 }
 ```
 
@@ -181,7 +184,7 @@ The equivalent Java code is the following:
 
 ```java
 public Result messages() {
-    return ok(jsMessages.apply(Scala.Option("window.Messages")));
+    return ok(jsMessages.all(Scala.Option("window.Messages")));
 }
 ```
 

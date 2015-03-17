@@ -1,12 +1,10 @@
 package controllers
 
 import jsmessages.JsMessagesFactory
-import play.api.i18n.{Lang, MessagesApi}
-import play.api.mvc.{Action, Controller, RequestHeader}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, Controller}
 
-class Application(jsMessagesFactory: JsMessagesFactory, messagesApi: MessagesApi) extends Controller {
-
-  implicit override def request2lang(implicit request: RequestHeader): Lang = messagesApi.preferred(request).lang
+class Application(jsMessagesFactory: JsMessagesFactory, val messagesApi: MessagesApi) extends Controller with I18nSupport {
 
   val messages = jsMessagesFactory.all
 

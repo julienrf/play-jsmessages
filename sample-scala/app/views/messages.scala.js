@@ -1,3 +1,3 @@
-@(messages: jsmessages.JsMessages)(implicit lang: Lang)
+@(jsMessages: jsmessages.JsMessages)(implicit messages: Messages)
 
-@messages(Some("window.Messages"))
+@jsMessages(Some("window.Messages"))

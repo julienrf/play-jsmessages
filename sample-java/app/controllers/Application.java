@@ -2,9 +2,9 @@ package controllers;
 
 import jsmessages.JsMessages;
 import jsmessages.JsMessagesFactory;
+import jsmessages.japi.Helper;
 import play.libs.Scala;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ public class Application extends Controller {
     }
 
     public Result jsMessages() {
-        return ok(jsMessages.apply(Scala.Option("window.Messages"), Http.Context.current().lang()));
+        return ok(jsMessages.apply(Scala.Option("window.Messages"), Helper.messagesFromCurrentHttpContext()));
     }
 
 }
