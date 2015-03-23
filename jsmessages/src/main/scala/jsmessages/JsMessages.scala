@@ -179,7 +179,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
             #m=((f.messages[k]!==u)?f.messages[k]:k)
           #}
           #for(i=1;i<arguments.length;i++){
-            #m=m.replace('{'+(i-1)+'}',arguments[i])
+            #m=m.replace(new RegExp('\\{' + (i-1) + '\\}', 'g'), arguments[i]);
           #}
           #return m};
           #f.messages=$messages;
@@ -217,7 +217,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
               #m=((m!==u)?m:kh);
             #}
             #for(i=1,le=arguments.length;i<le;++i){
-              #m=m.replace('{'+(i-1)+'}',arguments[i])
+              #m=m.replace(new RegExp('\\{' + (i-1) + '\\}', 'g'), arguments[i]);
             #}
             #return m;
           #}
