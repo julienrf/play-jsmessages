@@ -1,19 +1,35 @@
 package test
 
+import loaders.JsMessagesComponents
+import org.specs2.execute.{AsResult, Result}
 import org.specs2.mutable._
-
+import play.api._
+import play.api.libs.ws.WSClient
+import play.api.libs.ws.ning.NingWSComponents
+import play.api.test.Helpers.{await => pawait, _}
 import play.api.test._
-import play.api.test.Helpers._
-import play.api.test.Helpers.{await => pawait}
-import play.api.Play.current
-import play.api.libs.ws.WS
+import play.core.server.NettyServer
 
 class IntegrationSpec extends Specification {
+
+  case class Scope(browser: TestBrowser, ws: WSClient, baseUrl: String)
+  
+  def example[A : AsResult](f: Scope => A): Result = {
+    val ctx = ApplicationLoader.createContext(Environment.simple())
+    val components = new BuiltInComponentsFromContext(ctx) with JsMessagesComponents with NingWSComponents
+    val webDriver = WebDriverFactory(Helpers.HTMLUNIT)
+    val port = 3333
+    val baseUrl = s"http://localhost:$port"
+    val browser = TestBrowser(webDriver, Some(baseUrl))
+    Helpers.running(TestServer(port, components.application))(
+      AsResult.effectively(f(Scope(browser, components.wsClient, baseUrl)))
+    )
+  }
 
   "Application" should {
 
     "compute localized messages" in {
-      running(TestServer(3333), HTMLUNIT) { browser =>
+      example { scope =>
 
         val testsEn = List(
           "Hello World!",
@@ -55,45 +71,45 @@ class IntegrationSpec extends Specification {
         ).zipWithIndex
 
         for (i <- 1 to 2) {
-          browser.goTo("http://localhost:3333/test/" + i)
-          val divs = browser.$("div")
+          scope.browser.goTo("/test/" + i)
+          val divs = scope.browser.$("div")
           testsEnUS.foreach { kv =>
             divs.get(kv._2).getText must equalTo (kv._1)
           }
 
-          browser.goTo("http://localhost:3333/all/" + i)
-          val allDivs = browser.$("div")
+          scope.browser.goTo("/all/" + i)
+          val allDivs = scope.browser.$("div")
           testsEn.foreach { kv =>
             allDivs.get(kv._2).getText must equalTo (kv._1)
           }
         }
 
-        browser.goTo("http://localhost:3333/en")
-        val allDivsEn = browser.$("div")
+        scope.browser.goTo("/en")
+        val allDivsEn = scope.browser.$("div")
         testsEn.foreach { kv =>
           allDivsEn.get(kv._2).getText must equalTo (kv._1)
         }
 
-        browser.goTo("http://localhost:3333/enUS")
-        val allDivsEnUS = browser.$("div")
+        scope.browser.goTo("/enUS")
+        val allDivsEnUS = scope.browser.$("div")
         testsEnUS.foreach { kv =>
           allDivsEnUS.get(kv._2).getText must equalTo (kv._1)
         }
 
-        browser.goTo("http://localhost:3333/fr")
-        val allDivsFr = browser.$("div")
+        scope.browser.goTo("/fr")
+        val allDivsFr = scope.browser.$("div")
         testsFr.foreach { kv =>
           allDivsFr.get(kv._2).getText must equalTo (kv._1)
         }
 
-        browser.goTo("http://localhost:3333/cn")
-        val allDivsCn = browser.$("div")
+        scope.browser.goTo("/cn")
+        val allDivsCn = scope.browser.$("div")
         testsEn.foreach { kv =>
           allDivsCn.get(kv._2).getText must equalTo (kv._1)
         }
 
-        browser.goTo("http://localhost:3333/noLang")
-        val allDivsNoLang = browser.$("div")
+        scope.browser.goTo("/noLang")
+        val allDivsNoLang = scope.browser.$("div")
         testsEn.foreach { kv =>
           allDivsNoLang.get(kv._2).getText must equalTo (kv._1)
         }
@@ -106,14 +122,14 @@ class IntegrationSpec extends Specification {
           "error.maxLength"
         ).zipWithIndex
 
-        browser.goTo("http://localhost:3333/subset")
-        val allDivsSubset = browser.$("div")
+        scope.browser.goTo("/subset")
+        val allDivsSubset = scope.browser.$("div")
         testsSubset.foreach { kv =>
           allDivsSubset.get(kv._2).getText must equalTo (kv._1)
         }
 
-        browser.goTo("http://localhost:3333/subsetAll")
-        val allDivsSubsetAll = browser.$("div")
+        scope.browser.goTo("/subsetAll")
+        val allDivsSubsetAll = scope.browser.$("div")
         testsSubset.foreach { kv =>
           allDivsSubsetAll.get(kv._2).getText must equalTo (kv._1)
         }
@@ -126,22 +142,22 @@ class IntegrationSpec extends Specification {
           "Field is way too long"
         ).zipWithIndex
 
-        browser.goTo("http://localhost:3333/filter")
-        val allDivsFilter = browser.$("div")
+        scope.browser.goTo("/filter")
+        val allDivsFilter = scope.browser.$("div")
         testsFilter.foreach { kv =>
           allDivsFilter.get(kv._2).getText must equalTo (kv._1)
         }
 
-        browser.goTo("http://localhost:3333/filterAll")
-        val allDivsFilterAll = browser.$("div")
+        scope.browser.goTo("/filterAll")
+        val allDivsFilterAll = scope.browser.$("div")
         testsFilter.foreach { kv =>
           allDivsFilterAll.get(kv._2).getText must equalTo (kv._1)
         }
 
-        pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"en").get()).body must contain ("Hello {0}!")
-        pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"fr").get()).body must contain ("Bonjour {0} !")
-        pawait(WS.url("http://localhost:3333/all-messages.js").get()).body must contain ("Hello {0}!")
-        pawait(WS.url("http://localhost:3333/all-messages.js").get()).body must contain ("Bonjour {0} !")
+        pawait(scope.ws.url(s"${scope.baseUrl}/messages.js").withHeaders("Accept-Language"->"en").get()).body must contain ("Hello {0}!")
+        pawait(scope.ws.url(s"${scope.baseUrl}/messages.js").withHeaders("Accept-Language"->"fr").get()).body must contain ("Bonjour {0} !")
+        pawait(scope.ws.url(s"${scope.baseUrl}/all-messages.js").get()).body must contain ("Hello {0}!")
+        pawait(scope.ws.url(s"${scope.baseUrl}/all-messages.js").get()).body must contain ("Bonjour {0} !")
       }
     }
   }

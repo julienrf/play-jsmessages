@@ -1,20 +1,31 @@
 package controllers;
 
-import play.Play;
-import play.mvc.*;
-import views.html.*;
 import jsmessages.JsMessages;
+import jsmessages.JsMessagesFactory;
+import jsmessages.japi.Helper;
+import play.libs.Scala;
+import play.mvc.Controller;
+import play.mvc.Result;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class Application extends Controller {
 
-    final static JsMessages messages = JsMessages.create(Play.application());
+    private final JsMessages jsMessages;
 
-    public static Result index1() {
-        return ok(index1.render());
+    @Inject
+    public Application(JsMessagesFactory jsMessagesFactory) {
+        jsMessages = jsMessagesFactory.all();
     }
 
-    public static Result jsMessages() {
-        return ok(messages.generate("window.Messages"));
+    public Result index1() {
+        return ok(views.html.index1.render());
+    }
+
+    public Result jsMessages() {
+        return ok(jsMessages.apply(Scala.Option("window.Messages"), Helper.messagesFromCurrentHttpContext()));
     }
 
 }

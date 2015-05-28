@@ -1,12 +1,12 @@
 package controllers
 
-import play.api.mvc.{Controller, Action}
-import play.api.Play.current
-import jsmessages.api.JsMessages
+import jsmessages.JsMessagesFactory
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, Controller}
 
-object Application extends Controller {
+class Application(jsMessagesFactory: JsMessagesFactory, val messagesApi: MessagesApi) extends Controller with I18nSupport {
 
-  val messages = JsMessages.default
+  val messages = jsMessagesFactory.all
 
   val index = Action {
     Ok(views.html.index1())
@@ -64,7 +64,7 @@ object Application extends Controller {
     Ok(views.html.noLang())
   }
 
-  val messagesSubset = JsMessages.subset("greeting", "apostrophe")
+  val messagesSubset = jsMessagesFactory.subset("greeting", "apostrophe")
 
   val subset = Action {
     Ok(views.html.subset.subset())
@@ -82,7 +82,7 @@ object Application extends Controller {
     Ok(messagesSubset.all(Some("window.Messages")))
   }
 
-  val filteredMessages = JsMessages.filtering(_.startsWith("error."))
+  val filteredMessages = jsMessagesFactory.filtering(_.startsWith("error."))
 
   val filter = Action {
     Ok(views.html.filter.filter())
@@ -99,4 +99,5 @@ object Application extends Controller {
   val filterAllMessages = Action {
     Ok(filteredMessages.all(Some("window.Messages")))
   }
+
 }

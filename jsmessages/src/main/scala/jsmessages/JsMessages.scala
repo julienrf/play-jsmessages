@@ -1,12 +1,11 @@
-package jsmessages.api
+package jsmessages
 
-import play.api.Application
-import play.api.i18n.Lang
-import play.api.libs.json.{Writes, JsValue, Json}
+import play.api.i18n.{Messages, Lang}
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.twirl.api.JavaScript
 
 /**
- * Generate a JavaScript function computing localized messages of a Play! application.
+ * Generate a JavaScript function computing localized messages of a Play application.
  *
  * Typical usage:
  *
@@ -31,7 +30,7 @@ import play.twirl.api.JavaScript
  * }}}
  *
  * @param allMessagesData All the messages of the application, as a map of (lang -> map(key -> message pattern)). As it
- *                        is the case in Play!, JsMessages assumes that “default” messages are indexed by the `"default"`
+ *                        is the case in Play, JsMessages assumes that “default” messages are indexed by the `"default"`
  *                        and `"default.play"` language codes.
  */
 class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
@@ -47,15 +46,15 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    * The message corresponding to a given key is found by searching in the
    * following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
    * country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
-   * Play! default messages.
+   * Play default messages.
    */
   lazy val allMessages: Map[String, Map[String, String]] = for ((lang, msgs) <- allMessagesUnescaped) yield {
     lang match {
       // Do not merge with "default" if its "default.play"
-      case "default.play" => lang -> allMessagesUnescaped.get("default.play").getOrElse(Map.empty)
+      case "default.play" => lang -> allMessagesUnescaped.getOrElse("default.play", Map.empty)
       case _ => lang -> (
-        allMessagesUnescaped.get("default.play").getOrElse(Map.empty) ++
-        allMessagesUnescaped.get("default").getOrElse(Map.empty) ++
+        allMessagesUnescaped.getOrElse("default.play", Map.empty) ++
+        allMessagesUnescaped.getOrElse("default", Map.empty) ++
         extractCountry(lang).flatMap(country => allMessagesUnescaped.get(country)).getOrElse(Map.empty) ++
         msgs
       )
@@ -74,21 +73,21 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
   private val messagesCache: Map[String, String] = allMessages.mapValues(map => formatMap(map))
 
   /**
-   * @param lang Language to retrieve messages for
+   * @param messages Messages instance containing the lang to retrieve messages for
    * @return The messages defined for the given language `lang`, as a map
    *         of (key -> message). The message corresponding to a given key is found by searching in the
    *         following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
    *         country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
-   *         Play! default messages.
+   *         Play default messages.
    */
-  def messages(implicit lang: Lang): Map[String, String] = lookupLang(allMessages, lang)
+  def messages(implicit messages: Messages): Map[String, String] = lookupLang(allMessages, messages)
 
   /**
-   * @param lang Language to retrieve messages for
+   * @param messages Messages instance containing the lang to retrieve messages for
    * @return The JSON formatted string of the for the given language `lang`. This is strictly equivalent to
    *         `Json.toJson(jsMessages.messages).toString`, but may be faster due to the use of caching.
    */
-  def messagesString(implicit lang: Lang): String = lookupLang(messagesCache, lang)
+  def messagesString(implicit messages: Messages): String = lookupLang(messagesCache, messages)
 
   /**
    * Generates a JavaScript function computing localized messages in the given implicit `Lang`.
@@ -120,12 +119,12 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    *                  function will just generate a function. Otherwise it will generate a function and assign
    *                  it to the given namespace. Note: you can set something like `Some("var Messages")` to use
    *                  a fresh variable.
-   * @param lang Language to use. The message corresponding to a given key is found by searching in the
+   * @param messages Messages instance defining the language to use. The message corresponding to a given key is found by searching in the
    *         following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
    *         country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
-   *         Play! default messages.
+   *         Play default messages.
    */
-  def apply(namespace: Option[String] = None)(implicit lang: Lang): JavaScript = apply(namespace, messagesString)
+  def apply(namespace: Option[String] = None)(implicit messages: Messages): JavaScript = apply(namespace, messagesString)
 
   /**
    * Generates a JavaScript function computing localized messages in all the languages of the application.
@@ -153,7 +152,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    * Note that, given a message key, the JavaScript function will search the corresponding message in the
    * following locations, in order: the language (e.g. in the `conf/messages.fr-FR` file), the language
    * country (e.g. `conf/messages.fr`), the application default messages (`conf/messages`) and the
-   * Play! default messages.
+   * Play default messages.
    *
    * Note: This implementation does not handle quotes escaping in patterns and subformats (see
    * http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
@@ -236,7 +235,8 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
 
   private def extractCountry(lang: String): Option[String] = if (lang.contains("-")) Some(lang.split("-")(0)) else None
 
-  private def lookupLang[A](data: Map[String, A], lang: Lang): A =
+  private def lookupLang[A](data: Map[String, A], messages: Messages): A = {
+    val lang = messages.lang
     // Try to get the messages for the lang
     data.get(lang.code)
       // If none, try to get it from its country
@@ -245,48 +245,6 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
       .orElse(data.get("default"))
       // If none, screw that, crash the system! It's your fault for no having a default.
       .getOrElse(sys.error(s"Lang $lang is not supported by the application. Consider adding it to your 'application.langs' key in your 'conf/application.conf' file or at least provide a default messages file."))
-
-}
-
-object JsMessages {
-
-  /**
-   * @return a `JsMessages` instance using the `app` message files.
-   */
-  def default(implicit app: Application): JsMessages = new JsMessages(play.api.i18n.Messages.messages)
-
-  /**
-   * Example:
-   *
-   * {{{
-   *   val jsMessages = JsMessages.filtering(_.startsWith("error."))
-   * }}}
-   *
-   * @param filter a predicate to filter message keys
-   * @param app the application to retrieve messages from
-   * @return a `JsMessages` instance using the `app` message files, keeping only messages which keys satisfy `filter`
-   */
-  def filtering(filter: String => Boolean)(implicit app: Application): JsMessages = {
-    val data = play.api.i18n.Messages.messages
-    new JsMessages(data.mapValues(_.filterKeys(filter)))
   }
 
-  /**
-   * Example:
-   *
-   * {{{
-   *   val jsMessages = JsMessages.subset(
-   *     "error.required",
-   *     "error.number"
-   *   )
-   * }}}
-   *
-   * @param keys the list of keys to keep
-   * @param app the application to retrieve messages from
-   * @return a `JsMessages` instance using the `app` message files, keeping only messages which keys are in `keys`
-   */
-  def subset(keys: String*)(implicit app: Application): JsMessages = filtering(keys.contains)
-
-  /** Convenient alias for `default` for Java users */
-  def create(app: Application) = default(app)
 }
