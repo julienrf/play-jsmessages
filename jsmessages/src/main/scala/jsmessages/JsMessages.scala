@@ -7,19 +7,13 @@ import play.twirl.api.JavaScript
 /**
  * Generate a JavaScript function computing localized messages of a Play application.
  *
- * Typical usage:
+ * Typical usage (from within a Play controller):
  *
  * {{{
- *   import play.api.mvc._
- *   import play.api.Play.current
- *   import jsmessages.api.JsMessages
+ *   val jsMessages: JsMessages = ???
  *
- *   object Application extends Controller {
- *     val jsMessages = JsMessages.default
- *
- *     val messages = Action { implicit request =>
- *       Ok(jsMessages(Some("window.Messages")))
- *     }
+ *   val messages = Action { implicit request =>
+ *     Ok(jsMessages(Some("window.Messages")))
  *   }
  * }}}
  *
@@ -28,6 +22,8 @@ import play.twirl.api.JavaScript
  * {{{
  *   console.log(Messages("greeting", "Julien")); // prints "Hello, Julien!"
  * }}}
+ *
+ * See [[JsMessagesFactory]] to know how to get a `JsMessages` instance.
  *
  * @param allMessagesData All the messages of the application, as a map of (lang -> map(key -> message pattern)). As it
  *                        is the case in Play, JsMessages assumes that “default” messages are indexed by the `"default"`

@@ -7,7 +7,22 @@ import play.api.i18n.MessagesApi
 import play.api.inject.Module
 
 /**
- * Defines various methods returning a [[JsMessages]].
+ * Defines various methods returning a [[JsMessages]] instance.
+ *
+ * Typical usage:
+ *
+ * {{{
+ *   import jsmessages.JsMessagesFactory
+ *   import play.api.i18n.{I18nSupport, MessagesApi}
+ *   import play.api.mvc.{Action, Controller}
+ *
+ *   class Application(jsMessagesFactory: JsMessagesFactory, val messagesApi: MessagesApi) extends Controller with I18nSupport {
+ *     val jsMessages = jsMessagesFactory.all
+ *     val messages = Action { implicit request =>
+ *       Ok(messages(Some("window.Messages")))
+ *     }
+ *   }
+ * }}}
  *
  * @param messagesApi The underlying Play i18n module to retrieve messages from
  */
