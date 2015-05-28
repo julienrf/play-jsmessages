@@ -19,7 +19,6 @@ lazy val jsmessages = project
       ws,
       component("play")
     ),
-    resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
     publishMavenStyle := true,
     publishTo := {
       val nexus = "https://oss.sonatype.org"
@@ -56,13 +55,15 @@ lazy val jsmessages = project
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
   .settings(commonSettings: _*).settings(
     routesGenerator := InjectedRoutesGenerator,
-    libraryDependencies += specs2 % Test
+    libraryDependencies += specs2 % Test,
+    resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
   ).enablePlugins(PlayScala)
   .dependsOn(jsmessages)
 
 lazy val sampleJava = Project("sample-java", file("sample-java"))
   .settings(commonSettings: _*).settings(
-    libraryDependencies += specs2 % Test
+    libraryDependencies += specs2 % Test,
+    resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
   ).enablePlugins(PlayJava)
   .dependsOn(jsmessages)
 
