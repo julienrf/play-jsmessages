@@ -111,7 +111,7 @@ JsMessages jsMessages = jsMessagesFactory.all();
 JsMessages jsMessages = jsMessagesFactory.subset(Scala.varargs("error.required", "error.number"));
 JsMessages jsMessages = jsMessagesFactory.filtering(new scala.runtime.AbstractFunction1<String, Boolean>() {
   @Override
-  Boolean apply(String key) {
+  public Boolean apply(String key) {
     return key.startsWith("error.");
   }
 });
