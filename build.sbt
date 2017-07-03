@@ -52,25 +52,28 @@ lazy val jsmessages = project
     }
   )
 
+
+// Settings for sample play-apps, containing the tests.
+val sampleSettings = commonSettings ++ Seq(
+  libraryDependencies ++= Seq(
+    guice,
+    "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.0.0" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
+  ),
+  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+)
+
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
-  .settings(commonSettings: _*).settings(
-    routesGenerator := InjectedRoutesGenerator,
-    libraryDependencies ++= Seq(
-      guice,
-      "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.0.0" % Test,
-      "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
-    ),
-    resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
-  ).enablePlugins(PlayScala)
+  .settings(sampleSettings: _*)
+  .enablePlugins(PlayScala)
   .dependsOn(jsmessages)
 
 lazy val sampleJava = Project("sample-java", file("sample-java"))
-  .settings(commonSettings: _*).settings(
-    libraryDependencies += specs2 % Test,
-    resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
-  ).enablePlugins(PlayJava)
+  .settings(sampleSettings: _*)
+  .enablePlugins(PlayJava)
   .dependsOn(jsmessages)
 
 lazy val playJsmessages = project.in(file("."))
   .settings(commonSettings: _*)
   .aggregate(jsmessages, sampleScala, sampleJava)
+

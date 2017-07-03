@@ -1,30 +1,48 @@
 package test
 
-import org.specs2.mutable._
-
-import play.api.test._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatestplus.play.{HtmlUnitFactory, OneBrowserPerSuite, PlaySpec}
+import play.api.libs.ws.WSClient
 import play.api.test.Helpers._
 import play.api.test.Helpers.{await => pawait}
-import play.api.Play.current
-import play.api.libs.ws.WS
 
-class IntegrationSpec extends Specification {
-  
-  "Application" should {
-    
-    "compute localized messages" in {
-      running(TestServer(3333), HTMLUNIT) { browser =>
+class IntegrationSpec extends PlaySpec with GuiceOneServerPerSuite with OneBrowserPerSuite with HtmlUnitFactory {
 
-        browser.goTo("http://localhost:3333/")
+  def urlPrefix = s"http://localhost:$port"
 
-        browser.$("body").getTexts().get(0) must equalTo ("Hello World! Hello There!")
+  "HTML content" must {
 
-        pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"en").get).body must contain ("Hello {0}!")
+    "Say hello world" in {
+      go to s"$urlPrefix/"
+      find(tagName("body")).get.text mustBe "Hello World! Hello There!"
+    }
 
-        pawait(WS.url("http://localhost:3333/messages.js").withHeaders("Accept-Language"->"fr").get).body must contain ("Bonjour {0} !")
+  }
+
+
+  lazy val wsClient = app.injector.instanceOf[WSClient]
+
+  /** execute any tests against raw response body string. */
+  def _mkRawBodyTest[U](urlPath: String, httpHeaders: (String, String)*)(f: String => U) = {
+    val fut = wsClient.url(s"$urlPrefix$urlPath")
+      .withHttpHeaders(httpHeaders: _*).get()
+    f(pawait(fut).body)
+  }
+
+  "GET messages.js" must {
+
+    "contain Hello for en" in {
+      _mkRawBodyTest("/messages.js", "Accept-Language" -> "en") { b =>
+        b must include ("Hello {0}!")
       }
     }
-    
+
+    "contain Bonjour for fr" in {
+      _mkRawBodyTest( "/messages.js", "Accept-Language" -> "fr") { b =>
+        b must include ("Bonjour {0} !")
+      }
+    }
+
   }
-  
+
 }

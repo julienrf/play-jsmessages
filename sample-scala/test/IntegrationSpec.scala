@@ -141,21 +141,26 @@ class IntegrationSpec extends PlaySpec with GuiceOneServerPerSuite with OneBrows
     f(pawait(fut).body)
   }
 
-  "raw js text" must {
+  "GET messages.js" must {
 
-    "GET messages.js en" in {
+    "contain Hello for english" in {
       _mkRawBodyTest( "/messages.js", "Accept-Language" -> "en") { b =>
         b must include ("Hello {0}!")
       }
     }
 
-    "GET messages.js fr" in {
+    "contain Bonjour for French" in {
       _mkRawBodyTest("/messages.js", "Accept-Language" -> "fr") { b =>
         b must include ("Bonjour {0} !")
       }
     }
 
-    "GET all-messages.js en" in {
+  }
+
+
+  "GET all-messages.js" must {
+
+    "contain both Hello and Bonjour" in {
       _mkRawBodyTest("/all-messages.js") { b =>
         b must include ("Hello {0}!")
         b must include ("Bonjour {0} !")
@@ -163,6 +168,5 @@ class IntegrationSpec extends PlaySpec with GuiceOneServerPerSuite with OneBrows
     }
 
   }
-
 
 }
