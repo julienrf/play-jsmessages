@@ -55,7 +55,11 @@ lazy val jsmessages = project
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
   .settings(commonSettings: _*).settings(
     routesGenerator := InjectedRoutesGenerator,
-    libraryDependencies += specs2 % Test,
+    libraryDependencies ++= Seq(
+      guice,
+      "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.0.0" % Test,
+      "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
+    ),
     resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
   ).enablePlugins(PlayScala)
   .dependsOn(jsmessages)
