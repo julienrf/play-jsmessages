@@ -3,32 +3,32 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /test/1                     controllers.Application.index1
-GET     /test/2                     controllers.Application.index2
-GET     /all/1                      controllers.Application.all1
-GET     /all/2                      controllers.Application.all2
-GET     /en                         controllers.Application.en
-GET     /enUS                       controllers.Application.enUS
-GET     /fr                         controllers.Application.fr
-GET     /cn                         controllers.Application.cn
-GET     /noLang                     controllers.Application.noLang
-GET     /messages.js                controllers.Application.jsMessages
-GET     /all-messages.js            controllers.Application.allJsMessages
-GET     /messages-tmpl.js           controllers.Application.jsMessagesTmpl
-GET     /all-messages-tmpl.js       controllers.Application.allJsMessagesTmpl
+GET     /                           @controllers.Application.index
+GET     /test/1                     @controllers.Application.index1
+GET     /test/2                     @controllers.Application.index2
+GET     /all/1                      @controllers.Application.all1
+GET     /all/2                      @controllers.Application.all2
+GET     /en                         @controllers.Application.en
+GET     /enUS                       @controllers.Application.enUS
+GET     /fr                         @controllers.Application.fr
+GET     /cn                         @controllers.Application.cn
+GET     /noLang                     @controllers.Application.noLang
+GET     /messages.js                @controllers.Application.jsMessages
+GET     /all-messages.js            @controllers.Application.allJsMessages
+GET     /messages-tmpl.js           @controllers.Application.jsMessagesTmpl
+GET     /all-messages-tmpl.js       @controllers.Application.allJsMessagesTmpl
 
 # Subset
-GET     /subset                     controllers.Application.subset
-GET     /subsetAll                  controllers.Application.subsetAll
-GET     /subset-messages.js         controllers.Application.subsetMessages
-GET     /subsetAll-messages.js      controllers.Application.subsetAllMessages
+GET     /subset                     @controllers.Application.subset
+GET     /subsetAll                  @controllers.Application.subsetAll
+GET     /subset-messages.js         @controllers.Application.subsetMessages
+GET     /subsetAll-messages.js      @controllers.Application.subsetAllMessages
 
 # Filter
-GET     /filter                     controllers.Application.filter
-GET     /filterAll                  controllers.Application.filterAll
-GET     /filter-messages.js         controllers.Application.filterMessages
-GET     /filterAll-messages.js      controllers.Application.filterAllMessages
+GET     /filter                     @controllers.Application.filter
+GET     /filterAll                  @controllers.Application.filterAll
+GET     /filter-messages.js         @controllers.Application.filterMessages
+GET     /filterAll-messages.js      @controllers.Application.filterAllMessages
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file               @controllers.Assets.at(path="/public", file)

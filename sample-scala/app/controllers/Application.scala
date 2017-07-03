@@ -1,10 +1,17 @@
 package controllers
 
-import jsmessages.JsMessagesFactory
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, Controller}
+import javax.inject.Inject
 
-class Application(jsMessagesFactory: JsMessagesFactory, val messagesApi: MessagesApi) extends Controller with I18nSupport {
+import jsmessages.JsMessagesFactory
+import play.api.i18n.I18nSupport
+import play.api.mvc.{BaseController, ControllerComponents}
+
+class Application @Inject()(
+                             jsMessagesFactory: JsMessagesFactory,
+                             override val controllerComponents: ControllerComponents
+                           )
+  extends BaseController with I18nSupport {
+
 
   val messages = jsMessagesFactory.all
 

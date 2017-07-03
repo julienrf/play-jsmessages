@@ -2,9 +2,7 @@ package jsmessages
 
 import javax.inject.{Inject, Singleton}
 
-import play.api.{Configuration, Environment}
 import play.api.i18n.MessagesApi
-import play.api.inject.Module
 
 /**
  * Defines various methods returning a [[JsMessages]] instance.
@@ -58,7 +56,6 @@ class JsMessagesFactory @Inject() (messagesApi: MessagesApi) {
    * }}}
    *
    * @param keys the list of keys to keep
-   * @param app the application to retrieve messages from
    * @return a `JsMessages` instance keeping only messages whose keys are in `keys`
    */
   def subset(keys: String*): JsMessages = filtering(keys.contains)
