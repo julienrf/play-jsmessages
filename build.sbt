@@ -14,7 +14,6 @@ lazy val jsmessages = project
     name := "play-jsmessages",
     crossScalaVersions := Seq("2.11.8", "2.12.1"),
     libraryDependencies ++= Seq(
-      ws,
       component("play")
     ),
     publishMavenStyle := true,
