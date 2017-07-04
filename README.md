@@ -27,7 +27,7 @@ Previous versions are available here:
 
 ## API Documentation
 
-You can browse the online [scaladoc](http://julienrf.github.io/play-jsmessages/2.0.0/api/).
+You can browse the online [scaladoc](https://www.javadoc.io/doc/org.julienrf/play-jsmessages_2.12).
 
 ## Quick start
 

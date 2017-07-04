@@ -8,8 +8,6 @@ val commonSettings = Seq(
 
 lazy val homePage = settingKey[File]("Path to the project home page")
 
-lazy val publishDoc = taskKey[Unit]("Publish the documentation")
-
 lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
@@ -45,11 +43,7 @@ lazy val jsmessages = project
         </developer>
       </developers>
     ),
-    useGpg := true,
-    homePage := Path.userHome / "sites" / "julienrf.github.com",
-    publishDoc := {
-      IO.copyDirectory((doc in Compile).value, homePage.value / "play-jsmessages" / version.value / "api")
-    }
+    useGpg := true
   )
 
 
