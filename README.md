@@ -58,7 +58,7 @@ import javax.inject.Inject;
 public class Application extends Controller {
 
   @Inject
-  public(JsMessagesFactory jsMessagesFactory) {
+  public Application(JsMessagesFactory jsMessagesFactory) {
 
   }
 
