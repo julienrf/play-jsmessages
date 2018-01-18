@@ -11,12 +11,13 @@ Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to se
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "org.julienrf" %% "play-jsmessages" % "2.0.0"
+libraryDependencies += "org.julienrf" %% "play-jsmessages" % "2.1.0"
 ```
 
-The current 2.0.0 version is compatible with Play 2.4 and both Scala 2.10 and 2.11.
+The current 2.1.0 version is compatible with Play 2.5 and Scala 2.11.
 
 Previous versions are available here:
+ * [`2.0.0`](https://github.com/julienrf/play-jsmessages/tree/2.0.0) for play-2.4 ;
  * [`1.6.2`](https://github.com/julienrf/play-jsmessages/tree/1.6.2) for play-2.3 ;
  * [`1.6.1`](https://github.com/julienrf/play-jsmessages/tree/1.6.1) for play-2.2 ;
  * [`1.5.2`](https://github.com/julienrf/play-jsmessages/tree/1.5.2) for play-2.2 ;
@@ -209,6 +210,9 @@ Note: if you pass `undefined` as the language parameter, it will use the default
 
 ## Changelog
 
+* 2.1.0
+  - Play 2.5.x compatibility
+  
 * 2.0.0
   - Play 2.4.x compatibility
 
