@@ -41,8 +41,7 @@ lazy val jsmessages = project
           <url>http://julien.richard-foy.fr</url>
         </developer>
       </developers>
-    ),
-    useGpg := true
+    )
   )
 
 
