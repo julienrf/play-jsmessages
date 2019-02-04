@@ -11,12 +11,13 @@ Take a look at the [Scala](/sample-scala) and [Java](/sample-java) samples to se
 Add a dependency on the following artifact:
 
 ```scala
-libraryDependencies += "org.julienrf" %% "play-jsmessages" % "3.0.0"
+libraryDependencies += "org.julienrf" %% "play-jsmessages" % "4.0.0-SNAPSHOT"
 ```
 
-The current 3.0.0 version is compatible with Play 2.6 and both Scala 2.11 and 2.12.
+The current 4.0.0-SNAPSHOT version is compatible with Play 2.7 and both Scala 2.11 and 2.12.
 
 Previous versions are available here:
+ * [`3.0.0`](https://github.com/julienrf/play-jsmessages/tree/3.0.0) for play-2.6 ;
  * [`2.1.0`](https://github.com/julienrf/play-jsmessages/tree/2.1.0) for play-2.5 ;
  * [`2.0.0`](https://github.com/julienrf/play-jsmessages/tree/2.0.0) for play-2.4 ;
  * [`1.6.2`](https://github.com/julienrf/play-jsmessages/tree/1.6.2) for play-2.3 ;
@@ -138,10 +139,11 @@ get one by mixing the `play.api.i18n.I18nSupport` trait in your controller.
 Or in Java:
 
 ```java
-import jsmessages.japi.Helper;
+@Inject
+private MessagesApi messagesApi;
 
-public Result messages() {
-    return ok(jsMessages.apply(Scala.Option("window.Messages"), Helper.messagesFromCurrentHttpContext()));
+public Result messages(Http.Request request) {
+    return ok(jsMessages.apply(Scala.Option("window.Messages"), this.messagesApi.preferred(request)));
 }
 ```
 
@@ -210,6 +212,9 @@ console.log(messagesFr('greeting', 'Julien')); // "Bonjour Julien!"
 Note: if you pass `undefined` as the language parameter, it will use the default messages.
 
 ## Changelog
+* 4.0.0-SNAPSHOT
+  - Play 2.7.x compatibility.
+
 * 3.0.0
   - Play 2.6.x compatibility. All tests moved to scalatest+play and dependency injection.
 
