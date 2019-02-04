@@ -109,7 +109,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    * }}}
    *
    * Note: This implementation does not handle quotes escaping in patterns and subformats (see
-   * http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
+   * http://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html)
    *
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this
    *                  function will just generate a function. Otherwise it will generate a function and assign
@@ -151,7 +151,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
    * Play default messages.
    *
    * Note: This implementation does not handle quotes escaping in patterns and subformats (see
-   * http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html)
+   * http://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html)
    *
    * @param namespace Optional JavaScript namespace to use to put the function definition. If not set, this
    *                  function will just generate a function. Otherwise it will generate a function and

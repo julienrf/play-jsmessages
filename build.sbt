@@ -3,7 +3,7 @@ parallelExecution in Global := false
 val commonSettings = Seq(
   organization := "org.julienrf",
   version := "4.0.0-SNAPSHOT",
-  scalaVersion := "2.11.8"
+  scalaVersion := "2.11.12"
 )
 
 lazy val homePage = settingKey[File]("Path to the project home page")
@@ -12,7 +12,7 @@ lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
     name := "play-jsmessages",
-    crossScalaVersions := Seq("2.11.8", "2.12.1"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8"),
     libraryDependencies ++= Seq(
       component("play")
     ),
@@ -50,8 +50,8 @@ lazy val jsmessages = project
 val sampleSettings = commonSettings ++ Seq(
   libraryDependencies ++= Seq(
     guice,
-    "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.0.0" % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
+    "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.0.1" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.1" % Test
   ),
   resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 )
@@ -69,4 +69,3 @@ lazy val sampleJava = Project("sample-java", file("sample-java"))
 lazy val playJsmessages = project.in(file("."))
   .settings(commonSettings: _*)
   .aggregate(jsmessages, sampleScala, sampleJava)
-
