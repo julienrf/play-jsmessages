@@ -14,7 +14,7 @@ Add a dependency on the following artifact:
 libraryDependencies += "org.julienrf" %% "play-jsmessages" % "4.0.0"
 ```
 
-The current 4.0.0 version is compatible with Play 2.7 and both Scala 2.11 and 2.12.
+The current 4.0.0 version is compatible with Play 2.7 and Scala 2.11, 2.12 and 2.13.
 
 Previous versions are available here:
  * [`3.0.0`](https://github.com/julienrf/play-jsmessages/tree/3.0.0) for play-2.6 ;
@@ -213,7 +213,7 @@ Note: if you pass `undefined` as the language parameter, it will use the default
 
 ## Changelog
 * 4.0.0
-  - Play 2.7.x compatibility.
+  - Play 2.7.x compatibility, cross-compiled for Scala 2.13.
 
 * 3.0.0
   - Play 2.6.x compatibility. All tests moved to scalatest+play and dependency injection.

@@ -4,6 +4,8 @@ import play.api.i18n.Messages
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.twirl.api.JavaScript
 
+import scala.collection.compat._
+
 /**
  * Generate a JavaScript function computing localized messages of a Play application.
  *
@@ -34,7 +36,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
   // Message patterns have to escape quotes using double quotes, here we unescape them because we don’t support using quotes to escape format elements
   // TODO Also remove subformats
   private val allMessagesUnescaped: Map[String, Map[String, String]] =
-    allMessagesData.mapValues(_.mapValues(_.replace("''", "'")))
+    allMessagesData.view.mapValues(_.view.mapValues(_.replace("''", "'")).toMap).toMap
 
   /**
    * Messages for each available lang of the application.
@@ -66,7 +68,7 @@ class JsMessages(allMessagesData: Map[String, Map[String, String]]) {
   private val allMessagesCache: String = allMessagesJson.toString()
 
   // Per lang cache of the messages
-  private val messagesCache: Map[String, String] = allMessages.mapValues(map => formatMap(map))
+  private val messagesCache: Map[String, String] = allMessages.view.mapValues(map => formatMap(map)).toMap
 
   /**
    * @param messages Messages instance containing the lang to retrieve messages for

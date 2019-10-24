@@ -4,6 +4,8 @@ import javax.inject.{Inject, Singleton}
 
 import play.api.i18n.MessagesApi
 
+import scala.collection.compat._
+
 /**
  * Defines various methods returning a [[JsMessages]] instance.
  *
@@ -42,7 +44,7 @@ class JsMessagesFactory @Inject() (messagesApi: MessagesApi) {
    * @return a `JsMessages` instance keeping only messages whose keys satisfy `filter`
    */
   def filtering(filter: String => Boolean): JsMessages = {
-    new JsMessages(messagesApi.messages.mapValues(_.filterKeys(filter)))
+    new JsMessages(messagesApi.messages.view.mapValues(_.view.filter { case (key, _) => filter(key) }.toMap).toMap)
   }
 
   /**
