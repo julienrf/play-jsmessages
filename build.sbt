@@ -2,8 +2,8 @@ parallelExecution in Global := false
 
 val commonSettings = Seq(
   organization := "org.julienrf",
-  version := "5.0.0",
-  scalaVersion := "2.13.1"
+  version := "6.0.0",
+  scalaVersion := "2.13.12"
 )
 
 lazy val homePage = settingKey[File]("Path to the project home page")
@@ -12,10 +12,10 @@ lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
     name := "play-jsmessages",
-    crossScalaVersions := Seq("2.12.11", "2.13.1"),
+    crossScalaVersions := Seq("2.13.12", "3.3.1"),
     libraryDependencies ++= Seq(
       component("play"),
-      "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.2"
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.8.1"
     ),
     publishMavenStyle := true,
     publishTo := {
@@ -50,10 +50,10 @@ lazy val jsmessages = project
 val sampleSettings = commonSettings ++ Seq(
   libraryDependencies ++= Seq(
     guice,
-    "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.1.2" % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test
+    "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.2.5" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0" % Test
   ),
-  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+  //resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 )
 
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
