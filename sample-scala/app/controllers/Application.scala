@@ -1,10 +1,9 @@
 package controllers
 
 import javax.inject.Inject
-
 import jsmessages.JsMessagesFactory
 import play.api.i18n.I18nSupport
-import play.api.mvc.{BaseController, ControllerComponents}
+import play.api.mvc.{AnyContent, BaseController, ControllerComponents, Request}
 
 class Application @Inject()(
                              jsMessagesFactory: JsMessagesFactory,
@@ -27,7 +26,7 @@ class Application @Inject()(
     Ok(views.html.index2())
   }
 
-  val jsMessages = Action { implicit request =>
+  val jsMessages = Action { implicit request: Request[AnyContent] =>
     Ok(messages(Some("window.Messages")))
   }
 
@@ -47,7 +46,7 @@ class Application @Inject()(
     Ok(views.js.all(messages))
   }
 
-  val jsMessagesTmpl = Action { implicit request =>
+  val jsMessagesTmpl = Action { implicit request: Request[AnyContent] =>
     Ok(views.js.messages(messages))
   }
 
@@ -77,7 +76,7 @@ class Application @Inject()(
     Ok(views.html.subset.subset())
   }
 
-  val subsetMessages = Action { implicit request =>
+  val subsetMessages = Action { implicit request: Request[AnyContent] =>
     Ok(messagesSubset(Some("window.Messages")))
   }
 
@@ -95,7 +94,7 @@ class Application @Inject()(
     Ok(views.html.filter.filter())
   }
 
-  val filterMessages = Action { implicit request =>
+  val filterMessages = Action { implicit request: Request[AnyContent] =>
     Ok(filteredMessages(Some("window.Messages")))
   }
 
