@@ -14,25 +14,15 @@ lazy val jsmessages = project
       component("play"),
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.8.1"
     ),
-    pomExtra := (
-      <url>http://github.com/julienrf/play-jsmessages</url>
-      <licenses>
-        <license>
-          <name>MIT License</name>
-          <url>http://opensource.org/licenses/mit-license.php</url>
-        </license>
-      </licenses>
-      <scm>
-        <url>git@github.com:julienrf/play-jsmessages.git</url>
-        <connection>scm:git:git@github.com:julienrf/play-jsmessages.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>julienrf</id>
-          <name>Julien Richard-Foy</name>
-          <url>http://julien.richard-foy.fr</url>
-        </developer>
-      </developers>
+    homepage := Some(url("https://github.com/julienrf/play-jsmessages")),
+    licenses := List("MIT License" -> url("https://opensource.org/licenses/mit-license.php")),
+    developers := List(
+      Developer(
+        "julienrf",
+        "Julien Richard-Foy",
+        "julien@richard-foy.fr",
+        url("https://github.com/julienrf")
+      )
     )
   )
 
