@@ -12,7 +12,6 @@ lazy val jsmessages = project
     crossScalaVersions := Seq("2.13.12", "3.3.1"),
     libraryDependencies ++= Seq(
       component("play"),
-      "org.scala-lang.modules" %% "scala-collection-compat" % "2.8.1"
     ),
     homepage := Some(url("https://github.com/julienrf/play-jsmessages")),
     licenses := List("MIT License" -> url("https://opensource.org/licenses/mit-license.php")),
@@ -31,8 +30,7 @@ lazy val jsmessages = project
 val sampleSettings = commonSettings ++ Seq(
   libraryDependencies ++= Seq(
     guice,
-    "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.2.5" % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0" % Test
+    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test
   ),
   publish / skip := true,
 )

@@ -4,7 +4,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.twirl.api.JavaScript
 
-import scala.collection.compat._
+
 
 /**
  * Generate a JavaScript function computing localized messages of a Play application.
