@@ -2,11 +2,8 @@ parallelExecution in Global := false
 
 val commonSettings = Seq(
   organization := "org.julienrf",
-  version := "6.0.0-SNAPSHOT",
   scalaVersion := "2.13.12"
 )
-
-lazy val homePage = settingKey[File]("Path to the project home page")
 
 lazy val jsmessages = project
   .settings(commonSettings: _*)
@@ -17,12 +14,6 @@ lazy val jsmessages = project
       component("play"),
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.8.1"
     ),
-    publishMavenStyle := true,
-    publishTo := {
-      val nexus = "https://oss.sonatype.org"
-      if (isSnapshot.value) Some("snapshots" at s"$nexus/content/repositories/snapshots")
-      else Some("releases" at s"$nexus/service/local/staging/deploy/maven2")
-    },
     pomExtra := (
       <url>http://github.com/julienrf/play-jsmessages</url>
       <licenses>
@@ -53,7 +44,7 @@ val sampleSettings = commonSettings ++ Seq(
     "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.2.5" % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0" % Test
   ),
-  //resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+  publish / skip := true,
 )
 
 lazy val sampleScala = Project("sample-scala", file("sample-scala"))
@@ -68,4 +59,5 @@ lazy val sampleJava = Project("sample-java", file("sample-java"))
 
 lazy val playJsmessages = project.in(file("."))
   .settings(commonSettings: _*)
+  .settings(publish / skip := true)
   .aggregate(jsmessages, sampleScala, sampleJava)
