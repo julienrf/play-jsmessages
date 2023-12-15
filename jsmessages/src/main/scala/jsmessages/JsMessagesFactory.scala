@@ -4,7 +4,7 @@ import javax.inject.{Inject, Singleton}
 
 import play.api.i18n.MessagesApi
 
-import scala.collection.compat._
+
 
 /**
  * Defines various methods returning a [[JsMessages]] instance.
