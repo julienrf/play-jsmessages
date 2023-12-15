@@ -17,10 +17,10 @@ libraryDependencies += "org.julienrf" %% "play-jsmessages" % "7.0.0"
 The current 7.0.0 version is compatible with Play 3.0 and Scala 2.13 and 3.3.
 
 Previous versions are available here:
- * [`6.0.0`](https://github.com/julienrf/play-jsmessages/tree/4.0.0) for play-2.9 ;
- * [`5.0.0`](https://github.com/julienrf/play-jsmessages/tree/4.0.0) for play-2.8 ;
- * [`4.0.0`](https://github.com/julienrf/play-jsmessages/tree/4.0.0) for play-2.7 ;
- * [`3.0.0`](https://github.com/julienrf/play-jsmessages/tree/3.0.0) for play-2.6 ;
+ * [`6.0.0`](https://github.com/julienrf/play-jsmessages/tree/v6.0.0) for play-2.9 ;
+ * [`5.0.0`](https://github.com/julienrf/play-jsmessages/tree/v5.0.0) for play-2.8 ;
+ * [`4.0.0`](https://github.com/julienrf/play-jsmessages/tree/v4.0.0) for play-2.7 ;
+ * [`3.0.0`](https://github.com/julienrf/play-jsmessages/tree/v3.0.0) for play-2.6 ;
  * [`2.1.0`](https://github.com/julienrf/play-jsmessages/tree/2.1.0) for play-2.5 ;
  * [`2.0.0`](https://github.com/julienrf/play-jsmessages/tree/2.0.0) for play-2.4 ;
  * [`1.6.2`](https://github.com/julienrf/play-jsmessages/tree/1.6.2) for play-2.3 ;
