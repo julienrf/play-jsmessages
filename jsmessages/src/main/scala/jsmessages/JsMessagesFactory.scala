@@ -1,6 +1,6 @@
 package jsmessages
 
-import javax.inject.{Inject, Singleton}
+import jakarta.inject.{Inject, Singleton}
 
 import play.api.i18n.MessagesApi
 

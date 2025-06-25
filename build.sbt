@@ -30,7 +30,7 @@ lazy val jsmessages = project
 val sampleSettings = commonSettings ++ Seq(
   libraryDependencies ++= Seq(
     guice,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test
+    "org.scalatestplus.play" %% "scalatestplus-play" % "8.0.0-M1" % Test
   ),
   publish / skip := true,
 )

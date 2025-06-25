@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.Inject
+import jakarta.inject.Inject
 import jsmessages.JsMessagesFactory
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AnyContent, BaseController, ControllerComponents, Request}
