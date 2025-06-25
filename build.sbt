@@ -2,14 +2,14 @@ parallelExecution in Global := false
 
 val commonSettings = Seq(
   organization := "org.julienrf",
-  scalaVersion := "2.13.12"
+  scalaVersion := "2.13.16"
 )
 
 lazy val jsmessages = project
   .settings(commonSettings: _*)
   .settings(
     name := "play-jsmessages",
-    crossScalaVersions := Seq("2.13.12", "3.3.1"),
+    crossScalaVersions := Seq("2.13.16", "3.3.6"),
     libraryDependencies ++= Seq(
       component("play"),
     ),
