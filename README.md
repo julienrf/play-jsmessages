@@ -14,9 +14,10 @@ Add a dependency on the following artifact:
 libraryDependencies += "org.julienrf" %% "play-jsmessages" % "7.0.0"
 ```
 
-The current 7.0.0 version is compatible with Play 3.0 and Scala 2.13 and 3.3.
+The current 8.0.0-M1 version is compatible with Play 3.1-M1 and Scala 2.13 and 3.3.
 
 Previous versions are available here:
+ * [`7.0.0`](https://github.com/julienrf/play-jsmessages/tree/v7.0.0) for play-3.0 ;
  * [`6.0.0`](https://github.com/julienrf/play-jsmessages/tree/v6.0.0) for play-2.9 ;
  * [`5.0.0`](https://github.com/julienrf/play-jsmessages/tree/v5.0.0) for play-2.8 ;
  * [`4.0.0`](https://github.com/julienrf/play-jsmessages/tree/v4.0.0) for play-2.7 ;
